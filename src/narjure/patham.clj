@@ -5,6 +5,8 @@
 
 (def ETERNAL -100000)
 
+;patham9 experiments file
+
 ;type definitions
 
 ;a truth value is a tuple (confidence,frequency) in (0,1)x[0,1]

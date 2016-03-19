@@ -672,3 +672,9 @@ So these rules are for bringing NAL-statements into a different, implied and mor
     (println "Min" (reduce min (vals fr)))
     (println "Max" (reduce (fn [[_ v1 :as p] [_ v :as n]]
                              (if (> v1 v) p n)) fr))))
+
+;; <script>
+;; function replace_html(a,b){ while(document.body.innerHTML.contains(a)) {
+;;  document.body.innerHTML = document.body.innerHTML.replace(a, b); } }
+;;  replace_html('#R[','    '); replace_html(')]',') '); replace_html('list/A','A_1..n'); replace_html('list/B','B_1..m');
+;; </script>

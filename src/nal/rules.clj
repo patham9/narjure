@@ -410,9 +410,9 @@ So these rules are for bringing NAL-statements into a different, implied and mor
 
          ;equivalence resemblance
          #R[(M <=> P) (S <=> M) |- (S <=> P) :pre ((:!= S P)) :post (:t/resemblance :order-for-all-same :allow-backward)]
-         ;mixed temporal equivalence resemblance1
+         ;temporally mixed equivalence resemblance1
          #R[(M </> P) (S <|> M) |- (S </> P) :pre ((:!= S P)) :post (:t/resemblance :allow-backward)]
-         ;mixed temporal equivalence resemblance2
+         ;temporally mixed equivalence resemblance2
          #R[(M <|> P) (S </> M) |- (S </> P) :pre ((:!= S P)) :post (:t/resemblance :allow-backward)]
          )
 

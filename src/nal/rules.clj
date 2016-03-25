@@ -164,7 +164,7 @@ So these rules are for bringing NAL-statements into a different, implied and mor
          ; If M is a special case of P and S and M are similar then S is also a special case of P (strong)
          ;inheritance subject analogy
          #R[(M --> P) (S <-> M) |- (S --> P) :pre ((:!= S P)) :post (:t/analogy :d/strong :allow-backward)]
-         ;inheritance predicate similarity
+         ;inheritance predicate analogy
          #R[(P --> M) (S <-> M) |- (P --> S) :pre ((:!= S P)) :post (:t/analogy :d/strong :allow-backward)]
          ;similarity resemblance
          #R[(M <-> P) (S <-> M) |- (S <-> P) :pre ((:!= S P)) :post (:t/resemblance :d/strong :allow-backward)]
@@ -188,14 +188,14 @@ So these rules are for bringing NAL-statements into a different, implied and mor
          ; If P and S are in the intension/extension of M then union/difference and intersection can be built:
          ; inheritance composition subject
          #R[(P --> M) (S --> M) |- (((S | P) --> M) :post (:t/intersection)
-                                     ((S & P) --> M) :post (:t/union)
-                                     ((P ~ S) --> M) :post (:t/difference))
+                                    ((S & P) --> M) :post (:t/union)
+                                    ((P ~ S) --> M) :post (:t/difference))
             :pre ((:not-set? S) (:not-set? P)(:!= S P) (:no-common-subterm S P))]
 
          ; inheritance composition predicate
          #R[(M --> P) (M --> S) |- ((M --> (P & S)) :post (:t/intersection)
-                                     (M --> (P | S)) :post (:t/union)
-                                     (M --> (P - S)) :post (:t/difference))
+                                    (M --> (P | S)) :post (:t/union)
+                                    (M --> (P - S)) :post (:t/difference))
             :pre ((:not-set? S) (:not-set? P)(:!= S P) (:no-common-subterm S P))]
          )
 
@@ -410,9 +410,9 @@ So these rules are for bringing NAL-statements into a different, implied and mor
 
          ;equivalence resemblance
          #R[(M <=> P) (S <=> M) |- (S <=> P) :pre ((:!= S P)) :post (:t/resemblance :order-for-all-same :allow-backward)]
-         ;forward equivalence resemblance
+         ;mixed temporal equivalence resemblance1
          #R[(M </> P) (S <|> M) |- (S </> P) :pre ((:!= S P)) :post (:t/resemblance :allow-backward)]
-         ;concurrent equivalence resemblances
+         ;mixed temporal equivalence resemblance2
          #R[(M <|> P) (S </> M) |- (S </> P) :pre ((:!= S P)) :post (:t/resemblance :allow-backward)]
          )
 
@@ -509,20 +509,21 @@ So these rules are for bringing NAL-statements into a different, implied and mor
          ; If S is the case and (&& S :list/A) is not the case it can't be that (&& :list/A) is the case
           ;Forward conjunction decompose
          #R[S (&/ S :list/A) |- (&/ :list/A) :post (:t/decompose-pnn :seq-interval-from-premises)]
-          ;Concurrent conjunction decompose
+         ;Concurrent conjunction decompose
          #R[S (&| S :list/A) |- (&| :list/A) :post (:t/decompose-pnn)]
-          ;Conjunction decompose
+         ;Conjunction decompose
          #R[S (&& S :list/A) |- (&& :list/A) :post (:t/decompose-pnn)]
-          ;Disjunction decompose
+         ;Disjunction decompose
          #R[S (|| S :list/A) |- (|| :list/A) :post (:t/decompose-npp)]
 
          ; Additional for negation: https://groups.google.com/forum/#!topic/open-nars/g-7r0jjq2Vc
-          ;negative forward conjunction decompose
+         ;negative forward conjunction decompose
          #R[S (&/ (-- S) :list/A) |- (&/ :list/A) :post (:t/decompose-nnn :seq-interval-from-premises)]
+         ;negative concurrent conjunction decompose
          #R[S (&| (-- S) :list/A) |- (&| :list/A) :post (:t/decompose-nnn)]
-          ;negeative concurrend conjunction decompose
+         ;negeative concurrent conjunction decompose
          #R[S (&& (-- S) :list/A) |- (&& :list/A) :post (:t/decompose-nnn)]
-          ;negative disjunction decompose
+         ;negative disjunction decompose
          #R[S (|| (-- S) :list/A) |- (|| :list/A) :post (:t/decompose-ppp)]
          )
 
@@ -597,42 +598,42 @@ So these rules are for bringing NAL-statements into a different, implied and mor
          abstractly but still precisely about things like the statement \"for every lock there exists a key which opens it\" demands.
          "
           ; Introduce variables by common subject or predicate
-         ; variable introduction implication predicate
+         ; variable introduction predicate
          #R[(S --> M) (P --> M) |- (((P --> $X) ==> (S --> $X)) :post (:t/abduction)
                                     ((S --> $X) ==> (P --> $X)) :post (:t/induction)
                                     ((P --> $X) <=> (S --> $X)) :post (:t/comparison)
                                     (&& (S --> #Y) (P --> #Y)) :post (:t/intersection))
                                          :pre ((:!= S P))]
 
-         ;variable introduction forward implication predicate
+         ;variable introduction forward predicate
          #R[(S --> M) (P --> M) |- (((&/ (P --> $X) I) =/> (S --> $X)) :post (:t/induction :linkage-temporal)
                                     ((S --> $X) =\> (&/ (P --> $X) I)) :post (:t/abduction :linkage-temporal)
                                     ((&/ (P --> $X) I) </> (S --> $X)) :post (:t/comparison :linkage-temporal)
                                     (&/ (P --> #Y) I (S --> #Y)) :post (:t/intersection :linkage-temporal))
                                        :pre ((:!= S P) (:measure-time I))]
 
-         ;variable introduction concurrent implication predicate subject
+         ;variable introduction concurrent predicate
          #R[(S --> M) (P --> M) |- (((P --> $X) =|> (S --> $X)) :post (:t/abduction :linkage-temporal)
                                     ((S --> $X) =|> (P --> $X)) :post (:t/induction :linkage-temporal)
                                     ((P --> $X) <|> (S --> $X)) :post (:t/comparison :linkage-temporal)
                                     (&| (P --> #Y) (S --> #Y)) :post (:t/intersection :linkage-temporal))
                                          :pre ((:!= S P) (:concurrent Task Belief))]
 
-         ;variable introduction implication subject
+         ;variable introduction subject
          #R[(M --> S) (M --> P) |- ((($X --> S) ==> ($X --> P)) :post (:t/induction)
                                      (($X --> P) ==> ($X --> S)) :post (:t/abduction)
                                      (($X --> S) <=> ($X --> P)) :post (:t/comparison)
                                      (&& (#Y --> S) (#Y --> P)) :post (:t/intersection))
             :pre ((:!= S P)) ]
 
-         ;variable introduction forward implication subject
+         ;variable introduction forward subject
          #R[(M --> S) (M --> P) |- (((&/ ($X --> P) I) =/> ($X --> S))  :post (:t/induction :linkage-temporal)
                                      (($X --> S) =\> (&/ ($X --> P) I)) :post (:t/abduction :linkage-temporal)
                                      ((&/ ($X --> P) I) </> ($X --> S)) :post (:t/comparison :linkage-temporal)
                                      (&/ (#Y --> P) I (#Y --> S)) :post (:t/intersection :linkage-temporal))
             :pre ((:!= S P) (:measure-time I))]
 
-         ;variable introduction concurrent implication subject
+         ;variable introduction concurrent subject
          #R[(M --> S) (M --> P) |- ((($X --> S) =|> ($X --> P)) :post (:t/induction :linkage-temporal)
                                     (($X --> P) =|> ($X --> S)) :post (:t/abduction :linkage-temporal)
                                     (($X --> S) <|> ($X --> P)) :post (:t/comparison :linkage-temporal)
@@ -756,17 +757,17 @@ So these rules are for bringing NAL-statements into a different, implied and mor
 
          ; When P and then S happened according to an observation by induction (weak) it may be that alyways after P usually S happens.
 
-         ;Temporal Induction Sequential
+         ;Temporal Induction forward
          #R[P S |- (((&/ S I) =/> P) :post (:t/induction :linkage-temporal)
-                     (P =\> (&/ S I)) :post (:t/abduction :linkage-temporal)
-                     ((&/ S I) </> P) :post (:t/comparison :linkage-temporal)
-                     (&/ S I P) :post (:t/intersection :linkage-temporal))
+                    (P =\> (&/ S I)) :post (:t/abduction :linkage-temporal)
+                    ((&/ S I) </> P) :post (:t/comparison :linkage-temporal)
+                    (&/ S I P) :post (:t/intersection :linkage-temporal))
             :pre ((:measure-time I))]
 
-         ;Temporal Induction Concurrent
+         ;Temporal Induction concurrent
          #R[P S |- ((S =|> P) :post (:t/induction :linkage-temporal)
-                     (S <|> P) :post (:t/comparison :linkage-temporal)
-                     (&| S P) :post (:t/intersection :linkage-temporal))
+                    (S <|> P) :post (:t/comparison :linkage-temporal)
+                    (&| S P) :post (:t/intersection :linkage-temporal))
             :pre [(:concurrent Task Belief) (:not-implication-or-equivalence P) (:not-implication-or-equivalence S)]]
          )
 

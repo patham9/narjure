@@ -43,9 +43,10 @@
 (def temporal-window-duration 10)                           ; number of system cycles to consider as concurrent
 (def max-term-complexity 22)                                ; maximum number of terms and sub terms in a statement - syntactic complexity
 (def priority-threshold 0.001)                              ; concepts and tasks have to be above this to be processed
-(def max-concept-selections 5)                              ; don't set higher if not on a sumpercomputer, will cause trouble
+(def max-concept-selections 2)                              ; don't set higher if not on a sumpercomputer, will cause trouble
 (def termlink-single-sample-evidence-amount 0.01)           ; default conf for termlink truth value
 (def concept-max-termlinks 10)                              ; max size of termlink bag per concept
+(def max-termlink-selections 3)
 (def max-tasks 10)                                          ; max size of task bag per concept
 (def max-anticipations 10)                                   ; max size of anticipation bag per concept
 (def max-concepts 1000)                                     ; do not make too small (less than 50) as causes cyclic issue between task-dispatcher and concept-manager
@@ -55,10 +56,10 @@
 (def inverse-decay-rate 10)                                        ; forgetting adjustment rate for concepts e^-lt where l = (1.0 - durabiity) / decay-rate
 ; durability of 0.5 and decay rate of 100 fully decays priority in 1000 cycles
 ; decay-rate of 10 would fully decay it in 100 cycles
-(def system-tick-interval-slow 75)
-(def inference-tick-interval-slow 55)
-(def system-tick-interval-fast 25)
-(def inference-tick-interval-fast 12)
+(def system-tick-interval-slow 40)
+(def inference-tick-interval-slow 20)
+(def system-tick-interval-fast 10)
+(def inference-tick-interval-fast 5)
 (def system-tick-interval (atom system-tick-interval-slow))                               ;make big enough
 (def inference-tick-interval (atom inference-tick-interval-slow))
 (def anticipation-scale-dependent-tolerance 4.0)            ;has to be 4 since interval rounding has to agree with time measurement in 2-power

@@ -83,7 +83,7 @@
   "Update the concept budget"
   (let [els (:elements-map (:tasks state))      ; :priority-index ok here
         n (count els)
-        p (round2 3 (reduce max 0 (for [[id {task :task}] els] (first (:budget task)))))
+        p (round2 3 (reduce t-or 0 (for [[id {task :task}] els] (first (:budget task)))))
         q (round2 3 (reduce + 0 (for [[id {task :task}] els] (nth (:budget task) 2))))
         k  0.9999                                             ; long term quality forgetting
         new-q (if (pos? n) (* k (/ q n)) 0.0)

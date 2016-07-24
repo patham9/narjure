@@ -32,4 +32,4 @@
          rescale-factor 0.4 ;should probably not above input belief quality!
          quality (* truth-quality
                     rescale-factor)]
-     (structural-reward-budget [priority durability quality] derived-task))))
+     [priority durability quality])))

@@ -72,10 +72,21 @@
   "Generate all conclusions between task t1 and task t2"
   [{p1 :statement :as t1} {p2 :statement :as t2}]
   ;assign statement
-  (apply set/union (for [x (range 50)]
-     (generate-conclusions-no-commutativity (r/rules (:task-type t1))
-                                            (assoc t1 :statement (shuffle-term p1))
-                                            (assoc t2 :statement (shuffle-term p2))))))
+  (let [iterate-n (fn [next-it prev-shuffles prev-results x]
+                    (let [shuffled-p1 (shuffle-term p1)
+                          shuffled-p2 (shuffle-term p2)
+                          shuffle-pair [shuffled-p1 shuffled-p2]
+                          unification-power 10] ;how much shuffle attempts
+                      (if (< x unification-power)
+                        (if (some #{shuffle} prev-shuffles)
+                          (next-it next-it prev-shuffles prev-results (inc x)) ;generate-conclusions-no-commutativity is expensive this is why we avoid it
+                          (let [new-results (set/union prev-results
+                                                       (set (generate-conclusions-no-commutativity (r/rules (:task-type t1))
+                                                                                                   (assoc t1 :statement shuffled-p1)
+                                                                                                   (assoc t2 :statement shuffled-p2))))]
+                            (next-it next-it (set/union prev-shuffles #{shuffle-pair}) (set/union prev-results new-results) (inc x))))
+                        prev-results)))]
+    (iterate-n iterate-n #{} #{} 0)))
 
 (defn valid-statement
   "Valid statement filter.

@@ -70,10 +70,10 @@
 
 (defn generate-conclusions
   "Generate all conclusions between task t1 and task t2"
-  [rules {p1 :statement :as t1} {p2 :statement :as t2}]
+  [{p1 :statement :as t1} {p2 :statement :as t2}]
   ;assign statement
   (apply set/union (for [x (range 50)]
-     (generate-conclusions-no-commutativity rules
+     (generate-conclusions-no-commutativity (r/rules (:task-type t1))
                                             (assoc t1 :statement (shuffle-term p1))
                                             (assoc t2 :statement (shuffle-term p2))))))
 
@@ -83,20 +83,18 @@
   Some of these need detailled analysis and a lot of care / inference rule condition improvement to get rid of." ;TODO extent
   [term]
   (and
-    #_(coll? term)
+    (coll? term)
 
     ;dont allow a. terms, only NAL statements are allowed (TODO discuss NAL9 name operator handling)
-    #_(some #(= % (first term)) '[--> <-> ==> pred-impl retro-impl
+    (some #(= % (first term)) '[--> <-> ==> pred-impl retro-impl
                                 =|> <=> </> <|>
                                 -- || conj seq-conj &|])
 
     ;inheritance and Similarity can't have independent vars
-    (not (and (coll? term)
-              (some #(= % (first term)) '[--> <->])
+    (not (and (some #(= % (first term)) '[--> <->])
               (some #(= % 'ind-var) (flatten term))))
 
-    (not (and (coll? term)
-              (= (count term) 3)
+    (not (and (= (count term) 3)
               (coll? (first term))
               (= 'seq-conj (first (first term)))
               (interval? (first (first term)))))
@@ -114,15 +112,6 @@
     :eternal :eternal
     :event))
 
-(defn gen-conclusions
-  "Inference between both tasks, where the occurrence prefers the :event here when one is :event."
-  [parsed-p1 parsed-p2]
-  (generate-conclusions
-      (r/rules (:task-type parsed-p1))
-      parsed-p1
-      parsed-p2)
-    )
-
 ;this is the inference function we should use
 (defn inference
   "Inference between two premises"
@@ -139,4 +128,4 @@
                                             (some #{'qu-var} (flatten (:statement st)))))))
                     (map no-truth-for-questions-and-quests
                          (map interval-reduction
-                              (gen-conclusions parsed-p1 parsed-p2)))))))
+                              (generate-conclusions parsed-p1 parsed-p2)))))))

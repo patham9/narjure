@@ -11,7 +11,7 @@
 (defn inference
   "Apply these rules to task and belief which apply for the task-type."
   [{:keys [task-type] :as task} belief]
-  (generate-conclusions (r/rules task-type) task belief))
+  (generate-conclusions task belief))
 
 (def revision t/revision)
 

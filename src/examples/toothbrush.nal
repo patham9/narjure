@@ -2,10 +2,10 @@
 //feel free to make it more complicated as your
 //example suggests!
 <(*,toothbrush,plastic) --> made_of>.
-<(&/,<(*,$1,plastic) --> made_of>,<({SELF},$1) --> op_lighter>) =/> <$1 --> [heated]>>.
+<(&/,<(*,$1,plastic) --> made_of>,<({SELF},$1) --> ^lighter>) =/> <$1 --> [heated]>>.
 <<$1 --> [heated]> =/> <$1 --> [melted]>>.
 <<$1 --> [melted]> <|> <$1 --> [pliable]>>.
-<(&/,<$1 --> [pliable]>,<({SELF},$1) --> op_reshape>) =/> <$1 --> [hardened]>>.
+<(&/,<$1 --> [pliable]>,<({SELF},$1) --> ^reshape>) =/> <$1 --> [hardened]>>.
 <<$1 --> [hardened]> =|> <$1 --> [unscrewing]>>.
 <toothbrush --> object>.
 (&&,<#1 --> object>,<#1 --> [unscrewing]>)!

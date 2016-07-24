@@ -9,7 +9,7 @@
     'int-image 'ext-image '=/> '=|> '| '<=> '</> '<|> '- 'int-dif '|| '&&
     'ext-inter 'conj})
 
-;commutative:	<-> <=> <|> & | && ||
+;commutative:	<-> <=> <|> & | && || [ {
 ;not commutative: --> ==> =/> =\> </> &/ - ~
 
 (def commutative-ops #{'<-> '<=> '<|> '| '|| 'conj 'ext-inter 'ext-set 'int-set})

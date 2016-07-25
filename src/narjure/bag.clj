@@ -54,6 +54,8 @@
           (if (<= (:priority (nth priority-index (dec cnt)));if same priority, still prefer the new one.
                   priority)                                ;if new element has lower priority than the lowest,
             (let [[_ bag'] (pop-element bag)]               ;then don't even attempt to add the new element.
+              (when (= (count-elements bag) (count-elements bag'))
+                (throw (Exception. "FATAL BAG ERROR; POP ELEMENT AT MAX CAPACITY DID NOT WORK!!")))
               (add-element bag' element))
             bag)
           (let [priority-index' (conj priority-index (el id priority))

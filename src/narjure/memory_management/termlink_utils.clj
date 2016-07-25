@@ -71,7 +71,8 @@
 
 (defn update-termlink [tl]                                  ;term
   (let [old-strength ((:termlinks @state) tl)]
-    (add-termlink tl (calc-link-strength tl (if old-strength old-strength [0.5 0.0])))))
+    (add-termlink tl (calc-link-strength tl (if old-strength old-strength [0.5 0.0])))
+    (forget-termlinks)))
 
 (defn use-stronger [t1 t2]
   (let [all-keys (set/union (map first t1) (map first t2))]
@@ -115,7 +116,8 @@
           [f c] ((:termlinks @state) belief-concept-id)]
       (when (and f c (:truth derived-task)) ;just revise by using the truth value directly
         ;as evidence for the usefulness
-        (add-termlink belief-concept-id [1.0 truth-quality-to-confidence]))
+        (add-termlink belief-concept-id [1.0 truth-quality-to-confidence])
+        (forget-termlinks))
       )
     (catch Exception e () #_(println "fail"))))
 

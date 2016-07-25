@@ -56,8 +56,8 @@
 (def inverse-decay-rate 10)                                        ; forgetting adjustment rate for concepts e^-lt where l = (1.0 - durabiity) / decay-rate
 ; durability of 0.5 and decay rate of 100 fully decays priority in 1000 cycles
 ; decay-rate of 10 would fully decay it in 100 cycles
-(def system-tick-interval-slow 40)
-(def inference-tick-interval-slow 20)
+(def system-tick-interval-slow 20)
+(def inference-tick-interval-slow 10)
 (def system-tick-interval-fast 10)
 (def inference-tick-interval-fast 5)
 (def system-tick-interval (atom system-tick-interval-slow))                               ;make big enough

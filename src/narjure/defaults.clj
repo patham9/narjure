@@ -67,3 +67,4 @@
 (def concept-selection-introduced-termlink-default-budget [0.1 0.3])
 (def termlink-context-adaptations-speed 0.05)
 (def revision-relevant-event-distance 30.0)                  ;TODO check its relation to temporal window and the parameter in projection
+(def termlink-record-size concept-max-termlinks)

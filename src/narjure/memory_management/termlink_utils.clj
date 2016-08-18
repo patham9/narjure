@@ -123,10 +123,12 @@
 
 (defn get-termlink-endpoints
   "Get the link endpoints, namely the concepts which the concept links to: their id as well as priority."
-  []
+  [record]
   (let [initbag (b/default-bag concept-max-termlinks)]
     (try
-      (reduce (fn [a b] (b/add-element a b)) initbag (for [[k v] (:termlinks @state)]
+      (reduce (fn [a b] (b/add-element a b)) initbag (for [[k v] (filter (fn [[k _]] (or (nil? record)
+                                                                                     (not (some #{k} record))))
+                                                                         (:termlinks @state))]
                                                       {:priority (+ (expectation v)
                                                                        (:priority (first (b/get-by-id @c-bag k))))
                                                        :id       k}))
@@ -136,10 +138,10 @@
 
 (defn select-termlink-ref
   "Select the termlink probabilistically, taking link strength and target priorities into account."
-  []
+  [record]
   ;now search through termlinks, get the endpoint concepts, and form a bag of them
   (let [initbag (b/default-bag concept-max-termlinks)
-        resbag (get-termlink-endpoints)]
+        resbag (get-termlink-endpoints record)]
     ;now select an element from this bag
     (if (and resbag (pos? (b/count-elements resbag)))
       (let [[beliefconcept _] (b/get-by-index resbag (selection-fn (b/count-elements resbag)))]

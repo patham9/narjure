@@ -106,7 +106,7 @@
   [t1 t2]
   (let [revised-truth (nal.deriver.truth/revision (:truth t1) (:truth t2))
         evidence (make-evidence (:evidence t1) (:evidence t2))]
-    (assoc t1 :truth revised-truth :source :derived :evidence evidence :budget (max-budget (:budget t1) (:budget t2)))))
+    (dissoc (assoc t1 :truth revised-truth :source :derived :evidence evidence :budget (max-budget (:budget t1) (:budget t2))) :record)))
 
 (defn answer-quality
   "The quality of an answer, which is the confidence for y/n questions,

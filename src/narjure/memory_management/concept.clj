@@ -86,8 +86,17 @@
       (when (pos? (b/count-elements task-bag))
         (let [[el] (b/lookup-by-index task-bag (selection-fn (b/count-elements task-bag)))]
           (debuglogger search display ["selected inference task:" el])
-          (when-let [[c-id c-ref] (select-termlink-ref)]
-            (try                                                      ;update termlinks at first
+          (when-let [[c-id c-ref] (select-termlink-ref (:record (:task el)))]
+            (set-state!
+              (assoc @state :tasks
+                            (b/update-element task-bag
+                                              (assoc-in el [:task :record]
+                                                        (if (nil? (:record (:task el)))
+                                                          [c-id]
+                                                          (if (some #{c-id} (:record (:task el)))
+                                                            (:record (:task el))
+                                                            (take termlink-record-size (concat [c-id] (:record (:task el))))))))))
+            (try                                                  ;update termlinks at first
               (update-termlink c-id)          ;task concept here
               (catch Exception e (debuglogger search display (str "task side termlink strength error " (.toString e)))))
             (cast! c-ref [:belief-request-msg [(:id @state) (:task el)]])))))))

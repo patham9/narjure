@@ -92,10 +92,12 @@
                             (b/update-element task-bag
                                               (assoc-in el [:task :record]
                                                         (if (nil? (:record (:task el)))
-                                                          [c-id]
-                                                          (if (some #{c-id} (:record (:task el)))
-                                                            (:record (:task el))
-                                                            (take termlink-record-size (concat [c-id] (:record (:task el))))))))))
+                                                          [[c-id @nars-time]];;;
+                                                          (if (some (fn [[id _]] (= id c-id)) (:record (:task el)))
+                                                            (filter not-outdated-record-entry (:record (:task el)))
+                                                            (take termlink-record-size (filter not-outdated-record-entry
+                                                                                               (concat [[c-id @nars-time]]
+                                                                                                       (:record (:task el)))))))))))
             (try                                                  ;update termlinks at first
               (update-termlink c-id)          ;task concept here
               (catch Exception e (debuglogger search display (str "task side termlink strength error " (.toString e)))))

@@ -121,13 +121,21 @@
       )
     (catch Exception e () #_(println "fail"))))
 
+(defn not-outdated-record-entry [[id time]]
+  (< (- @nars-time time) 250))
+
 (defn get-termlink-endpoints
   "Get the link endpoints, namely the concepts which the concept links to: their id as well as priority."
   [record]
   (let [initbag (b/default-bag concept-max-termlinks)]
     (try
       (reduce (fn [a b] (b/add-element a b)) initbag (for [[k v] (filter (fn [[k _]] (or (nil? record)
-                                                                                     (not (some #{k} record))))
+                                                                                         (not (some (fn [[id time]]
+                                                                                                      (and
+                                                                                                        (not-outdated-record-entry [id time])
+                                                                                                        (= id k)))
+
+                                                                                                    record))))
                                                                          (:termlinks @state))]
                                                       {:priority (+ (expectation v)
                                                                        (:priority (first (b/get-by-id @c-bag k))))

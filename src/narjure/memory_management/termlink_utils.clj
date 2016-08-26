@@ -30,7 +30,7 @@
 (defn get-linkable-terms
   "disallow linking to itself"
   [task]
-  (filter #(not= % (:id @state)) (termlink-subterms (:statement task))))
+  (filter #(and (coll? %) (not= % (:id @state))) (termlink-subterms (:statement task))))
 
 (defn get-existing-terms-from-links
   "only use links whose target concept still exists"
@@ -52,8 +52,9 @@
 (defn add-termlink
   "Adds a termlink with term tl and strength strength."
   [tl strength]
-  (set-state! (assoc @state :termlinks (assoc (:termlinks @state)
-                                         tl strength)))
+  (when (coll? tl)
+    (set-state! (assoc @state :termlinks (assoc (:termlinks @state)
+                                          tl strength))))
   ;(forget-termlinks)
   )
 

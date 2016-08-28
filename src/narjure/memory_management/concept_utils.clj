@@ -79,11 +79,21 @@
         (set-state! (assoc @state :tasks (b/add-element (:tasks @state) el')))))
     (set-state! (assoc @state :last-forgotten @nars-time))))
 
+(defn concept-has-by-task-not-yet-recorded-link [state task]
+  (let [recorded-terms (if (:record task) (map first (:record task)) [])
+        links (:termlinks state)]
+    (some (fn [tl-term] (not (some #{tl-term} recorded-terms)))
+          (map first links))))
+
 (defn update-concept-budget [state, self]
   "Update the concept budget"
   (let [els (:elements-map (:tasks state))      ; :priority-index ok here
         n (count els)
-        p (round2 3 (reduce max 0 (for [[id {task :task}] els] (first (:budget task)))))
+        p (round2 3 (reduce max 0 (for [[id {task :task}] els] ;rec
+                                    (if (concept-has-by-task-not-yet-recorded-link state task)
+                                      (first (:budget task))
+                                      0.0)
+                                    )))
         q (round2 3 (reduce + 0 (for [[id {task :task}] els] (nth (:budget task) 2))))
         k  0.9999                                             ; long term quality forgetting
         new-q (if (pos? n) (* k (/ q n)) 0.0)

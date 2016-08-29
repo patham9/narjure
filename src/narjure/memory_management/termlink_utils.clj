@@ -62,7 +62,8 @@
   ([tl]
     (calc-link-strength tl [0.5 0.0]))
   ([tl old-strength]
-  (let [prio-me (concept-priority (:id @state))
+  old-strength
+    #_(let [prio-me (concept-priority (:id @state))
         prio-other (concept-priority tl)
         evidence-mul 0.5
         association (t-and prio-me prio-other)
@@ -139,7 +140,7 @@
                                                                                                     record))))
                                                                          (:termlinks @state))]
                                                       {:priority (+ (expectation v)
-                                                                       (:priority (first (b/get-by-id @c-bag k))))
+                                                                       #_(:priority (first (b/get-by-id @c-bag k))))
                                                        :id       k}))
       (catch Exception e (print "")
                          ;(println (str "error in get-termlink-endpoints: " e)

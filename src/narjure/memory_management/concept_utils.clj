@@ -96,7 +96,7 @@
                                     )))
         q (round2 3 (reduce + 0 (for [[id {task :task}] els] (nth (:budget task) 2))))
         k  0.9999                                             ; long term quality forgetting
-        new-q (if (pos? n) (* k (/ q n)) 0.0)
+        new-q 0.0 #_(if (pos? n) (* k (/ q n)) 0.0) ;already managed by tasks
         el {:id       (:id state)
             :priority (max p new-q)
             :quality new-q

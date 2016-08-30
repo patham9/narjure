@@ -114,10 +114,13 @@
           truth-quality-to-confidence (* truth-quality 1.0)
           [result-concept _]  (b/get-by-id @c-bag (:statement derived-task))
           #_activation #_(:priority result-concept)
-          [f c] ((:termlinks @state) belief-concept-id)]
+          belief-tl ((:termlinks @state) belief-concept-id)
+          [f c] (if belief-tl
+                  ((:termlinks @state) belief-concept-id)
+                  [0.5 0.0])]
       (when (and f c (:truth derived-task)) ;just revise by using the truth value directly
         ;as evidence for the usefulness
-        (add-termlink belief-concept-id [1.0 truth-quality-to-confidence])
+        (add-termlink belief-concept-id (revision [f c] [1.0 truth-quality-to-confidence]))
         (forget-termlinks))
       )
     (catch Exception e () #_(println "fail"))))

@@ -33,8 +33,8 @@
     (if (every? term-exists? terms)
       (let [task (dissoc task :terms)]
         (doseq [term terms]
-          (when task-concept-id
-            (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
+          (when true #_task-concept-id   ;UPDATE: reinforce the task concept link instead!!
+            (when-let [{c-ref :ref} ((:elements-map @c-bag) (:statement task) #_task-concept-id)]
               (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
           (when-let [{c-ref :ref} ((:elements-map @c-bag) term)]
             (cast! c-ref [:task-msg [task]]))))
@@ -49,8 +49,8 @@
     (let [task (dissoc task :terms)]
       (doseq [term terms]
         (when (b/exists? @c-bag term)
-          (when task-concept-id
-            (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
+          (when true #_task-concept-id   ;UPDATE: reinforce the task concept link instead!!
+            (when-let [{c-ref :ref} ((:elements-map @c-bag) (:statement task) #_task-concept-id)]
               (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
           (when-let [{c-ref :ref} ((:elements-map @c-bag) term)]
             (cast! c-ref [:task-msg [task]])))))))

@@ -61,8 +61,9 @@
   ([tl]
     (calc-link-strength tl [0.5 0.0]))
   ([tl old-strength]
-   (let [used-but-no-result-evidence 0.01]
-     (revision old-strength [0.0 used-but-no-result-evidence]))
+   old-strength
+    #_(let [used-but-no-result-evidence 0.01]
+      (revision old-strength [0.0 used-but-no-result-evidence]))
     #_(let [prio-me (concept-priority (:id @state))
         prio-other (concept-priority tl)
         evidence-mul 0.5

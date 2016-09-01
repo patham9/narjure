@@ -62,7 +62,7 @@
     (println (str "above truth " (vec (:truth (lense-max-statement-confidence-projected-to-now '[--> ballpos [int-set above]] :belief :event)))
                   " below truth " (vec (:truth (lense-max-statement-confidence-projected-to-now '[--> ballpos [int-set below]] :belief :event)))
                   " equal truth " (vec (:truth (lense-max-statement-confidence-projected-to-now '[--> ballpos [int-set equal]] :belief :event)))))
-    (nars-input-narsese "<ballpos --> [equal]>! :|:"))
+    #_(nars-input-narsese "<ballpos --> [equal]>! :|:"))
   (when (= (mod (:iteration state) 250) 1)
     (println "rand action")
     (nars-input-narsese (str (rand-nth ["<(*,{SELF}) --> op_up>! :|:"
@@ -71,7 +71,7 @@
 
 
   ;also give info from time to time
-  (when (= (mod (:iteration state) 80) 0)                    ;1
+  #_(when (= (mod (:iteration state) 80) 0)                    ;1
     #_(nars-input-narsese (str "<{" (int (* 100 (quot (:ball-py state) 100))) "} --> ballpos>. :|:" ))
     #_(nars-input-narsese (str "<{" (int (* 100 (quot @py 100))) "} --> barpos>. :|:" ))
     (if (and (>= (:ball-py state) @py)
@@ -104,8 +104,8 @@
              (<= (:ball-py state) (+ @py barheight)))
       (when (not= @updown-state "equal")
         (nars-input-narsese "<ballpos --> [equal]>. :|: %1.0;0.9%")
-        (nars-input-narsese "<ballpos --> [above]>. :|: %0%")
-        (nars-input-narsese "<ballpos --> [below]>. :|: %0%")
+        #_(nars-input-narsese "<ballpos --> [above]>. :|: %0%")
+        #_(nars-input-narsese "<ballpos --> [below]>. :|: %0%")
         (reset! updown-state "equal")
         #_(when allow-continuous-feedback
             ;(println "good NARS")
@@ -114,16 +114,16 @@
       (if (> (:ball-py state) @py)
         (when (not= @updown-state "below")
           (nars-input-narsese "<ballpos --> [below]>. :|:")
-          (nars-input-narsese "<ballpos --> [above]>. :|: %0%")
-          (nars-input-narsese "<ballpos --> [equal]>. :|: %0%")
+          #_(nars-input-narsese "<ballpos --> [above]>. :|: %0%")
+          #_(nars-input-narsese "<ballpos --> [equal]>. :|: %0%")
           (reset! updown-state "below")
           #_(when allow-continuous-feedback
               ;(println "bad NARS")
               (nars-input-narsese "<{SELF} --> [good]>. :|: %0.0;0.9%")))
         (when (not= @updown-state "above")
           (nars-input-narsese "<ballpos --> [above]>. :|:")
-          (nars-input-narsese "<ballpos --> [below]>. :|: %0%")
-          (nars-input-narsese "<ballpos --> [equal]>. :|: %0%")
+          #_(nars-input-narsese "<ballpos --> [below]>. :|: %0%")
+          #_(nars-input-narsese "<ballpos --> [equal]>. :|: %0%")
           (reset! updown-state "above")
           #_(when allow-continuous-feedback
               ;(println "bad NARS")

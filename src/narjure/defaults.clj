@@ -7,9 +7,9 @@
   [belief-frequency belief-confidence])
 
 (def belief-priority 0.99)
-(def belief-durability 0.9)
+(def belief-durability 0.99)
 ;todo clarify this
-(def belief-quality 0.5)
+(def belief-quality 0.2)
 
 (def belief-budget
   [belief-priority belief-durability belief-quality])
@@ -17,14 +17,14 @@
 (def question-priority 0.9)
 (def question-durability 0.9)
 ;todo clarify this
-(def question-quality 0.56)
+(def question-quality 0.26)
 
 (def question-budget
   [question-priority question-durability question-quality])
 
 (def goal-confidence 0.9)
 (def goal-priority 0.99)                                    ;set higher than potential quality rewards in the system (best-operation-selection, structural reinforcement)
-(def goal-quality 0.567)
+(def goal-quality 0.267)
 (def goal-durability 0.9)
 
 (def goal-budget
@@ -66,5 +66,5 @@
 (def termlink-default-budget [0.1 0.9])
 (def concept-selection-introduced-termlink-default-budget [0.1 0.3])
 (def termlink-context-adaptations-speed 0.05)
-(def revision-relevant-event-distance 30.0)                  ;TODO check its relation to temporal window and the parameter in projection
+(def revision-relevant-event-distance 10.0)                  ;TODO check its relation to temporal window and the parameter in projection
 (def termlink-record-size concept-max-termlinks)

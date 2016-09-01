@@ -155,10 +155,10 @@
                                                       (:truth strongest-belief-about-now)
                                                       (:truth belief))
                                              [(:truth strongest-belief-about-now) (:truth belief) (:evidence strongest-belief-about-now) (:evidence belief) unificaton-map belief]))))
-          #_print3 #_(println (str "step 3.3\n" (vec truth-A-B-unification-maps)))
+          print3 (println (str "step 3.3\n" (vec truth-A-B-unification-maps)))
           ;3.3 desire = desire value of goal
           desire (:truth (project-eternalize-to @nars-time goal @nars-time))
-          #_print4 #_(println (str "step 3.4\n" desire))
+          print4 (println (str "step 3.4\n" desire))
           ;3.4 execution desire expectation is: D=desire_strong(desire_strong(desire,truth_B),truth_A)
           D-unification-maps (for [[truth-A truth-B evidence-A evidence-B unification-map debug-belief] (filter (fn [u] u) truth-A-B-unification-maps)]
                                (do
@@ -178,14 +178,14 @@
                              (filter (fn [z] true #_(and (non-overlapping-evidence? (:evidence goal) (:evidence-A z))
                                                          (non-overlapping-evidence? (:evidence-A z) (:evidence-B z)) ;overlap check is not transitive: A {1 2 3} B {5} C {1 2 3}
                                                          (non-overlapping-evidence? (:evidence goal) (:evidence-B z)))) D-unification-maps))
-          #_print6 #_(println (str "finished 3 \n"best-option))
+          print6 (println (str "finished 3 \n"best-option))
           ]
 
      ;4. create a result operation goal task with the from the predictive statement first operation and evidence trail being the summary of all evidence trails
      (when (and best-option
                 (best-option :D)
                 (> (second (best-option :D)) truth-tolerance))
-       #_(println (str "had best operator option " (best-option :D)))
+       (println (str "had best operator option " (best-option :D)))
        (let [unimap (:unification-map best-option)
              statement (unimap '?operation)
              new-task {:statement  statement

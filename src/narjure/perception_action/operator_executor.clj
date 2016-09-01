@@ -5,6 +5,7 @@
      [actors :refer :all]]
     [taoensso.timbre :refer [debug info]]
     [narjure.debug-util :refer :all]
+    [narjure.defaults :refer [budgets]]
     [narjure.global-atoms :refer :all])
   (:refer-clojure :exclude [promise await]))
 
@@ -19,7 +20,10 @@
     if feedback msg required posts :sentence-msg to task creator"
   [from [msg operationgoal]]
   (let [feedback (assoc operationgoal :task-type :belief
-                                      :occurrence 0)
+                                      :occurrence 0
+                                      :source :input
+                                      :budget (budgets :belief)
+                                      )
         operation (:statement operationgoal)
         arguments (rest (second operation))
         operator (nth operation 2)]
@@ -40,8 +44,7 @@
                (output-task :execution operationgoal)
                (cast! (whereis :task-creator) [:sentence-msg feedback]))))
       (catch Exception e (debuglogger search display (str "operator execution error " (.toString e)))))
-    (output-task :execution operationgoal)
-    (cast! (whereis :task-creator) [:sentence-msg feedback]))) ;derived-sentence so we keep evidence trail
+    (output-task :execution operationgoal)))
 
 (defn msg-handler
   "Identifies message type and selects the correct message handler.

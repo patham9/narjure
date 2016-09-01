@@ -68,7 +68,11 @@
   [task derived-task]
   (when (< (:sc derived-task) max-term-complexity)
     (let [activation-gain 0.0
-          priority (* 0.5 (first (:budget task))) #_(max 1.0 (t-or activation-gain (first (:budget task))))
+          perception-helper (if (and (coll? (:statement derived-task))
+                                     (= (first (:statement derived-task)) 'seq-conj))
+                              1.0
+                              0.1)
+          priority (* perception-helper (first (:budget task))) #_(max 1.0 (t-or activation-gain (first (:budget task))))
          durability (/ (second (:budget task)) (Math/sqrt (:sc derived-task)))
          truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
                                                  0.0 #_(w2c 1.0))
@@ -77,4 +81,7 @@
          quality (* truth-quality
                     rescale-factor
                     #_(/ 1.0 (Math/sqrt complexity)))]
-     [priority durability quality] #_(structural-reward-budget [priority durability quality] derived-task))))
+      (structural-reward-budget  [(if (not= (:occurrence derived-task) :eternal)
+        priority
+        (* 0.5 priority))
+        durability quality] derived-task)  #_(structural-reward-budget [priority durability quality] derived-task) )))

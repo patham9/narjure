@@ -51,7 +51,7 @@
         budget (:budget task)
         lambda (/ (- 1.0 (second budget)) inverse-decay-rate)
         temporal-distance (if (= el-time :eternal) 0.0 (Math/abs (- el-time @nars-time)))
-        occurrence-decay (if (= el-time :eternal) 1.0 (/ 1.0 (+ 1.0 (* temporal-distance
+        occurrence-decay 1.0 #_(if (= el-time :eternal) 1.0 (/ 1.0 (+ 1.0 (* temporal-distance
                                                                        temporal-distance))))
         k-quality-occurrence-decay 10000.0
         distance-for-quality (/ temporal-distance k-quality-occurrence-decay)

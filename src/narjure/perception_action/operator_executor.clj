@@ -5,6 +5,7 @@
      [actors :refer :all]]
     [taoensso.timbre :refer [debug info]]
     [narjure.debug-util :refer :all]
+    [narjure.defaults :refer [budgets]]
     [narjure.global-atoms :refer :all])
   (:refer-clojure :exclude [promise await]))
 
@@ -19,7 +20,10 @@
     if feedback msg required posts :sentence-msg to task creator"
   [from [msg operationgoal]]
   (let [feedback (assoc operationgoal :task-type :belief
-                                      :occurrence 0)
+                                      :occurrence 0
+                                      :source :input
+                                      :budget (budgets :belief)
+                                      )
         operation (:statement operationgoal)
         arguments (rest (second operation))
         operator (nth operation 2)]
@@ -31,17 +35,16 @@
                  (do
                    (cast! (whereis :task-creator) [:sentence-msg feedback])
                    #_(when (coll? success)                  ;TODO collides with operation task idea
-                     (doseq [custom-feedback success] ;also allowing custom feedback tasks
-                       (cast! (whereis :task-creator) [:sentence-msg custom-feedback]))))
+                       (doseq [custom-feedback success] ;also allowing custom feedback tasks
+                         (cast! (whereis :task-creator) [:sentence-msg custom-feedback]))))
                  (cast! (whereis :task-creator) [:sentence-msg (assoc feedback :truth
                                                                                [(- 1.0 (first (:truth feedback)))
                                                                                 (second (:truth feedback))])])))
              (do ;if no function is registered, just enter the feedback, eliminates the issue that we need to register ops just to use them in examples
                (output-task :execution operationgoal)
                (cast! (whereis :task-creator) [:sentence-msg feedback]))))
-      (catch Exception e (debuglogger search display (str "operator execution error " (.toString e)))))
-    (output-task :execution operationgoal)
-    (cast! (whereis :task-creator) [:sentence-msg feedback]))) ;derived-sentence so we keep evidence trail
+         (catch Exception e (debuglogger search display (str "operator execution error " (.toString e)))))
+    (output-task :execution operationgoal)))
 
 (defn msg-handler
   "Identifies message type and selects the correct message handler.

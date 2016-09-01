@@ -67,14 +67,14 @@
   "The budget of a by general inference derived task."
   [task derived-task]
   (when (< (:sc derived-task) max-term-complexity)
-    (let [activation-gain 0.0
-          priority (* 0.5 (first (:budget task))) #_(max 1.0 (t-or activation-gain (first (:budget task))))
-         durability (/ (second (:budget task)) (Math/sqrt (:sc derived-task)))
-         truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
-                                                 0.0 #_(w2c 1.0))
-         complexity (:sc derived-task)
-         rescale-factor 0.4 ;should probably not above input belief quality!
-         quality (* truth-quality
-                    rescale-factor
-                    #_(/ 1.0 (Math/sqrt complexity)))]
-     [priority durability quality] #_(structural-reward-budget [priority durability quality] derived-task))))
+    (let [activation-gain 0.95
+          priority (max 1.0 (t-or activation-gain (first (:budget task))))
+          durability (/ (second (:budget task)) (Math/sqrt (:sc derived-task)))
+          truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
+                                                  0.0 #_(w2c 1.0))
+          complexity (:sc derived-task)
+          rescale-factor 0.4 ;should probably not above input belief quality!
+          quality (* truth-quality
+                     rescale-factor
+                     #_(/ 1.0 (Math/sqrt complexity)))]
+      (structural-reward-budget [priority durability quality] derived-task))))

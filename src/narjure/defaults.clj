@@ -9,7 +9,7 @@
 (def belief-priority 0.99)
 (def belief-durability 0.9)
 ;todo clarify this
-(def belief-quality 0.5)
+(def belief-quality 0.2)
 
 (def belief-budget
   [belief-priority belief-durability belief-quality])
@@ -17,14 +17,14 @@
 (def question-priority 0.9)
 (def question-durability 0.9)
 ;todo clarify this
-(def question-quality 0.56)
+(def question-quality 0.26)
 
 (def question-budget
   [question-priority question-durability question-quality])
 
 (def goal-confidence 0.9)
 (def goal-priority 0.99)                                    ;set higher than potential quality rewards in the system (best-operation-selection, structural reinforcement)
-(def goal-quality 0.567)
+(def goal-quality 0.267)
 (def goal-durability 0.9)
 
 (def goal-budget

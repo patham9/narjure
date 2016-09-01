@@ -30,27 +30,33 @@
 (def search (atom ""))
 
 (defn task-handler
-  [from [_ [task]]]
-  (debuglogger search display ["task processed:" task])
+  [from [_ [task_]]]
+  (when true
+    (let [task (if (= (:occurrence task_) :eternal)
+                 (assoc task_ :budget [(* 0.3 (first (:budget task_)))
+                                       (second (:budget task_))
+                                       (nth (:budget task_) 2)])
+                 task_)]
+      (debuglogger search display ["task processed:" task])
 
-  (refresh-termlinks task)
+      (refresh-termlinks task)
 
-  ; check observable and set if necessary
-  (when-not (:observable @state)
-    ;(println "obs1")
-    (let [{:keys [occurrence source]} task]
-      (when (and (not= occurrence :eternal) (= source :input) (= (:statement task) (:id @state)))
-        (set-state! (assoc @state :observable true)))))
+      ; check observable and set if necessary
+      (when-not (:observable @state)
+        ;(println "obs1")
+        (let [{:keys [occurrence source]} task]
+          (when (and (not= occurrence :eternal) (= source :input) (= (:statement task) (:id @state)))
+            (set-state! (assoc @state :observable true)))))
 
-  #_(when (and (= (:task-type task) :goal)
-          (= (:statement task) '[--> ballpos [int-set equal]]))
-    (println "concept ballpos equ exists"))
+      #_(when (and (= (:task-type task) :goal)
+                   (= (:statement task) '[--> ballpos [int-set equal]]))
+          (println "concept ballpos equ exists"))
 
-  (case (:task-type task)
-    :belief (process-belief state task 0)
-    :goal (process-goal state task 0)
-    :question (process-question state task)
-    :quest (process-quest state task)))
+      (case (:task-type task)
+        :belief (process-belief state task 0)
+        :goal (process-goal state task 0)
+        :question (process-question state task)
+        :quest (process-quest state task)))))
 
 (defn belief-request-handler
   ""
@@ -128,7 +134,7 @@
   (let [elements (:elements-map (:tasks new-state))]
     (set-state! (assoc @state :tasks (b/default-bag max-tasks)))
     (doseq [[_ el] elements]
-     (set-state! (assoc @state :tasks (b/add-element (:tasks @state) el))))))
+      (set-state! (assoc @state :tasks (b/add-element (:tasks @state) el))))))
 
 (defn concept-forget-handler
   "update cocnept budget"

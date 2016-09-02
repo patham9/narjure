@@ -82,7 +82,7 @@
           quality (* truth-quality
                      rescale-factor
                      #_(/ 1.0 (Math/sqrt complexity)))]
-      (if (and (= (:task-type derived-task) :belief)
+      (if false #_(and (= (:task-type derived-task) :belief)
                (not= (:occurrence derived-task) :eternal)
                (coll? (:statement derived-task))
                (= (first (:statement derived-task)) 'seq-conj))

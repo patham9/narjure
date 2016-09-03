@@ -32,10 +32,10 @@
   (let [terms (:terms task)]
     (if (every? term-exists? terms)
       (let [task (dissoc task :terms)]
+        (when task-concept-id
+          (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
+            (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
         (doseq [term terms]
-          (when task-concept-id
-            (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
-              (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
           (when-let [{c-ref :ref} ((:elements-map @c-bag) term)]
             (cast! c-ref [:task-msg [task]]))))
       (cast! (whereis :concept-manager) [:create-concept-msg [task-concept-id belief-concept-id task]]))))

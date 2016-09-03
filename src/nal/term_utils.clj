@@ -167,7 +167,8 @@
                (/ x 2))))))
 
 (defn str-is-integer [s]
-  (every? #(Character/isDigit %) s))
+  (when (not= s "")
+    (every? #(Character/isDigit %) s)))
 
 (defn interval-atom-to-interval
   "Change the interval atom to an interval"

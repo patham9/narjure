@@ -47,11 +47,11 @@
   [from [_ [task-concept-id belief-concept-id task]]]
   (let [terms (:terms task)]
     (let [task (dissoc task :terms)]
+      (when task-concept-id
+        (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
+          (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
       (doseq [term terms]
         (when (b/exists? @c-bag term)
-          (when task-concept-id
-            (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
-              (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
           (when-let [{c-ref :ref} ((:elements-map @c-bag) term)]
             (cast! c-ref [:task-msg [task]])))))))
 

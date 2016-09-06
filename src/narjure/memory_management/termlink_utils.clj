@@ -37,17 +37,21 @@
   [links]
   (filter #(b/exists? @c-bag %) (keys links)))
 
-(defn forget-termlinks
+(defn forget-termlinks-absolute
   "This one is for absolute forgetting of links: Remove termlinks whose concepts were forgot,
   remove worst termlinks if above max termlink count."
   []
-  ;TODO test
   (doseq [[tl _] (:termlinks @state)]
     (when (not (b/exists? @c-bag tl))
       (set-state! (assoc @state :termlinks (dissoc (:termlinks @state) tl)))))
   (while (> (count (:termlinks @state)) concept-max-termlinks)
     (let [worst (apply min-key (comp expectation second) (:termlinks @state))]
       (set-state! (assoc @state :termlinks (dissoc (:termlinks @state) (first worst)))))))
+
+(defn forget-termlinks-relative []
+  "Forget termlinks relative."
+  (set-state! (assoc @state :termlinks (apply merge (for [[tl [f c]] (:termlinks @state)]
+                                                      {tl (revision [f c] [0.0 0.01])})))))
 
 (defn add-termlink
   "Adds a termlink with term tl and strength strength."
@@ -73,7 +77,7 @@
 (defn update-termlink [tl]                                  ;term
   (let [old-strength ((:termlinks @state) tl)]
     (add-termlink tl (calc-link-strength tl (if old-strength old-strength [0.5 0.0])))
-    (forget-termlinks)))
+    (forget-termlinks-absolute)))
 
 (defn use-stronger [t1 t2]
   (let [all-keys (set/union (map first t1) (map first t2))]
@@ -106,20 +110,14 @@
   [from [_ [derived-task belief-concept-id]]]                       ;this one uses the usual priority durability semantics
   (try
     ;TRADITIONAL BUDGET INFERENCE (BLINK PART)
-    (let [complexity (if (:truth derived-task) (syntactic-complexity belief-concept-id) 1.0)
-          truth-quality (if (:truth derived-task)
+    (let [truth-quality (if (:truth derived-task)
                  (truth-to-quality (:truth derived-task))
                  (w2c 1.0))
-          #_quality #_(/ truth-quality complexity)
           truth-quality-to-confidence (* truth-quality 1.0)
-          [result-concept _]  (b/get-by-id @c-bag (:statement derived-task))
-          #_activation #_(:priority result-concept)
           [f c] ((:termlinks @state) belief-concept-id)]
       (when (and f c (:truth derived-task)) ;just revise by using the truth value directly
-        ;as evidence for the usefulness
-        (add-termlink belief-concept-id [1.0 truth-quality-to-confidence])
-        (forget-termlinks))
-      )
+        (add-termlink belief-concept-id (revision [1.0 truth-quality-to-confidence] [f c]))
+        (forget-termlinks-absolute)))
     (catch Exception e () #_(println "fail"))))
 
 (defn not-outdated-record-entry [[id time]]

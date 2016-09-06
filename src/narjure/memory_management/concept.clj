@@ -140,7 +140,8 @@
   "update cocnept budget"
   [from [_ new-state]]
   (forget-tasks)
-  (forget-termlinks)
+  (forget-termlinks-relative)
+  (forget-termlinks-absolute)
   (update-concept-budget @state @self))
 
 (defn shutdown-handler

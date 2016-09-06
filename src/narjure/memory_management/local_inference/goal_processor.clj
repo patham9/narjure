@@ -290,7 +290,7 @@
                 ;(println (str  "goal: " operation))
                 (when-not (:execution-evidence @state)
                   (set-state! (assoc @state :execution-evidence '())))
-                (when true #_(some (fn [z] (not (some #{z} (:execution-evidence @state)))) (:evidence operation))
+                (when (some (fn [z] (not (some #{z} (:execution-evidence @state)))) (:evidence operation))
                   (cast! (whereis :operator-executor) [:operator-execution-msg operation])
                   (set-state! (assoc @state :execution-evidence (take 50 (concat (:evidence operation) (:execution-evidence @state)))))
                   )))))))

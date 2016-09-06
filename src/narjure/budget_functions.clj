@@ -18,14 +18,6 @@
         positive-truth-bias 0.75]
     (max exp (* (- 1.0 exp) positive-truth-bias))))
 
-(defn occurrence-penalty-tr
-  "Occurrence budget penalty. Currently not used as forgetting seems to suffice."
-  [occ]
-  (let [k 0.0001]
-    (if (= occ :eternal)
-      1.0
-      (/ 1.0 (+ 1.0 (* k (Math/abs (- @nars-time occ))))))))
-
 (defn highest-desire-in-respect-to-now
   "The highest desire value in respect to current nars-time."
   [concept-term]
@@ -39,10 +31,6 @@
     (if (and (:truth derived-task)
              match)
       (do
-        ;(println "1")
-        ;(println (str "1.1" match))
-        ;(println (str "1.2" (match '?goal)))
-        ;(println (str "1.3" (highest-desire-in-respect-to-now (match '?goal))))
         (let [goal (match '?goal)
               precondition (match '?precondition)
               goal-desire (highest-desire-in-respect-to-now goal)]
@@ -68,23 +56,11 @@
   [task derived-task]
   (when (< (:sc derived-task) max-term-complexity)
     (let [activation-gain 0.8
-          perception-helper (if (and (coll? (:statement derived-task))
-                                     (= (first (:statement derived-task)) 'seq-conj))
-                              1.0
-                              0.1)
-          priority (* activation-gain perception-helper (first (:budget task)))
-          #_priority #_(max 1.0 (t-or activation-gain (first (:budget task))))
+          priority (* activation-gain (first (:budget task)))
           durability (/ (second (:budget task)) (Math/sqrt (:sc derived-task)))
           truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
-                                                  0.0 #_(w2c 1.0))
-          complexity (:sc derived-task)
+                                                  0.0)
           rescale-factor 0.4 ;should probably not above input belief quality!
           quality (* truth-quality
-                     rescale-factor
-                     #_(/ 1.0 (Math/sqrt complexity)))]
-      (if false #_(and (= (:task-type derived-task) :belief)
-               (not= (:occurrence derived-task) :eternal)
-               (coll? (:statement derived-task))
-               (= (first (:statement derived-task)) 'seq-conj))
-        (budgets :belief)
-        (structural-reward-budget [priority durability quality] derived-task)))))
+                     rescale-factor)]
+      (structural-reward-budget [priority durability quality] derived-task))))

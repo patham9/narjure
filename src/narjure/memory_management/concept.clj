@@ -112,13 +112,19 @@
 (defn termlink-strengthen-handler
   "Strenghtens the termlink between two concepts or creates it if not existing.
    A link is {key value] where key is term and value is budget [priority durability]"
-  [from [_ [term]]]
+  [from [_ [term pre-temporal]]]
   (try (let
          [termlinks (:termlinks @state)
-          old-link-strength (termlinks term)
-          temporal-link-bonus [1.0 0.99]
-          new-link-strength (calc-link-strength term (if old-link-strength old-link-strength temporal-link-bonus))]
-         (set-state! (assoc-in @state [:termlinks term] new-link-strength)))
+          old-link-strength (when termlinks (termlinks term))
+          temporal-link-bonus (if pre-temporal [0.99 0.0] [0.0 0.0])
+          old-or-temporal (if old-link-strength
+                            [(max (first temporal-link-bonus)
+                                  (first old-link-strength))
+                             (max (second temporal-link-bonus)
+                                  (second old-link-strength))]
+                            temporal-link-bonus)
+          new-link-strength (calc-link-strength term old-or-temporal)]
+         (add-termlink term new-link-strength))
        (catch Exception e (println "termlink strenghten fatal error"))))
 
 (defn concept-state-handler
@@ -140,7 +146,8 @@
   "update cocnept budget"
   [from [_ new-state]]
   (forget-tasks)
-  (forget-termlinks)
+  (forget-termlinks-relative)
+  (forget-termlinks-absolute)
   (update-concept-budget @state @self))
 
 (defn shutdown-handler

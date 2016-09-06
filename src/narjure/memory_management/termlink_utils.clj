@@ -27,53 +27,52 @@
     [clojure.set :as set])
   (:refer-clojure :exclude [promise await]))
 
-(defn get-linkable-terms
-  "disallow linking to itself"
-  [task]
-  (filter #(not= % (:id @state)) (termlink-subterms (:statement task))))
-
 (defn get-existing-terms-from-links
   "only use links whose target concept still exists"
   [links]
   (filter #(b/exists? @c-bag %) (keys links)))
 
-(defn forget-termlinks
+(defn forget-termlinks-absolute
   "This one is for absolute forgetting of links: Remove termlinks whose concepts were forgot,
   remove worst termlinks if above max termlink count."
   []
-  ;TODO test
   (doseq [[tl _] (:termlinks @state)]
     (when (not (b/exists? @c-bag tl))
       (set-state! (assoc @state :termlinks (dissoc (:termlinks @state) tl)))))
   (while (> (count (:termlinks @state)) concept-max-termlinks)
-    (let [worst (apply min-key (comp expectation second) (:termlinks @state))]
+    (let [worst (apply min-key (comp first second) (:termlinks @state))]
       (set-state! (assoc @state :termlinks (dissoc (:termlinks @state) (first worst)))))))
+
+(defn forget-termlinks-relative []
+  "Forget termlinks relative."
+  (set-state! (assoc @state :termlinks (apply merge (for [[tl [p d]] (:termlinks @state)]
+                                                      {tl [(* p d) d]})))))
 
 (defn add-termlink
   "Adds a termlink with term tl and strength strength."
   [tl strength]
   (set-state! (assoc @state :termlinks (assoc (:termlinks @state)
                                          tl strength)))
-  ;(forget-termlinks)
-  )
+  (forget-termlinks-absolute))
 
 (defn calc-link-strength
-  ([tl]
-    (calc-link-strength tl [0.5 0.0]))
-  ([tl old-strength]
-  old-strength
-    #_(let [prio-me (concept-priority (:id @state))
-        prio-other (concept-priority tl)
-        evidence-mul 0.5
-        association (t-and prio-me prio-other)
-        disassocation (t-and prio-me (- 1.0 prio-other))]
-    (revision [0.0 (* evidence-mul disassocation)]
-              (revision old-strength [1.0 (* evidence-mul association)])))))
+  [tl old-strength]
+  (let [prio-me (concept-priority (:id @state))
+        prio-other (concept-priority tl)]
+    (if (and prio-me prio-other)
+      (let [init-penalty 0.1
+            association (* init-penalty (t-and prio-me prio-other))
+            initial-strength [association 0.999]]
+        [(max (first initial-strength)
+              (first old-strength))
+         (max (second initial-strength)
+              (second old-strength))])
+      old-strength)))
 
 (defn update-termlink [tl]                                  ;term
   (let [old-strength ((:termlinks @state) tl)]
-    (add-termlink tl (calc-link-strength tl (if old-strength old-strength [0.5 0.0])))
-    (forget-termlinks)))
+    (when old-strength
+      (add-termlink tl (calc-link-strength tl old-strength)))))
 
 (defn use-stronger [t1 t2]
   (let [all-keys (set/union (map first t1) (map first t2))]
@@ -82,21 +81,18 @@
                        str2 (when t2 (t2 k))
                        st1 (if str1 str1 [0.0 0.0])
                        st2 (if str2 str2 [0.0 0.0])]
-                   (if (> (first st1) (first st2))
-                     {k st1}
-                     {k st2}))))))
+                   {k [(max (first st1) (first st2))
+                       (max (second st1) (second st2))]})))))
 
 (defn refresh-termlinks [task]
   "Create new potential termlinks to other terms modulated by the concept priority they link to."
-  ; :termlinks {term [budget]}
   (let [concept-prio (fn [z] (let [prio (concept-priority z)]
                                (if prio
                                  prio
                                  0.0)))
         newtermlinks (use-stronger (apply merge
-                                   (for [tl (get-linkable-terms task)] ;prefer existing termlinks strengths
-                                     {tl (calc-link-strength tl) #_[(* (first termlink-default-budget)
-                                                                                                         (concept-prio tl)) (second termlink-default-budget)]}))
+                                   (for [tl (termlink-subterms (:statement task))] ;prefer existing termlinks strengths
+                                     {tl (calc-link-strength tl [0.0 0.0])}))
                             (:termlinks @state))
         valid-links (select-keys newtermlinks (get-existing-terms-from-links newtermlinks))];only these keys which exist in concept bag
     (set-state! (merge @state {:termlinks valid-links}))))
@@ -105,22 +101,16 @@
   "Link growth by contextual relevance of the inference and the result, as well as usefulness of the result."
   [from [_ [derived-task belief-concept-id]]]                       ;this one uses the usual priority durability semantics
   (try
-    ;TRADITIONAL BUDGET INFERENCE (BLINK PART)
-    (let [complexity (if (:truth derived-task) (syntactic-complexity belief-concept-id) 1.0)
-          truth-quality (if (:truth derived-task)
-                 (truth-to-quality (:truth derived-task))
-                 (w2c 1.0))
-          #_quality #_(/ truth-quality complexity)
-          truth-quality-to-confidence (* truth-quality 1.0)
-          [result-concept _]  (b/get-by-id @c-bag (:statement derived-task))
-          #_activation #_(:priority result-concept)
-          [f c] ((:termlinks @state) belief-concept-id)]
-      (when (and f c (:truth derived-task)) ;just revise by using the truth value directly
-        ;as evidence for the usefulness
-        (add-termlink belief-concept-id [1.0 truth-quality-to-confidence])
-        (forget-termlinks))
+    (let [p-d (:budget derived-task)
+          old-value ((:termlinks @state) (:statement derived-task))
+          old-p-d (if old-value old-value [0.0 0.0])]
+      (when (and p-d (:budget derived-task))
+        (add-termlink belief-concept-id [(max (first p-d)
+                                              (first old-p-d))
+                                         (max (second p-d)
+                                              (second old-p-d))]))
       )
-    (catch Exception e () #_(println "fail"))))
+    (catch Exception e (println "fail"))))
 
 (defn not-outdated-record-entry [[id time]]
   (< (- @nars-time time) 250))
@@ -138,7 +128,7 @@
 
                                                                                                     record))))
                                                                          (:termlinks @state))]
-                                                      {:priority (+ (expectation v)
+                                                      {:priority (+ (first v)
                                                                        #_(:priority (first (b/get-by-id @c-bag k))))
                                                        :id       k}))
       (catch Exception e (print "")

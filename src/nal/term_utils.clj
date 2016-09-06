@@ -65,6 +65,12 @@
    (remove #(or (logic-ops %) (interval? %) (placeholder? %) (variable? %))
            (termlink-subterms 0 content))))
 
+(defn has-common-link-subterm
+  [content1 content2]
+  (let [subs1 (termlink-subterms content1)
+        subs2 (termlink-subterms content2)]
+    (some (fn [s2]
+            (some #{s2} subs1)) subs2)))
 
 (defn is-singular-sequence [st]
   "Checks whether the sequence is of (&/,a) form"

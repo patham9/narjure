@@ -30,12 +30,12 @@
    dispatch task to event buffer actor."
   [from [_ [task-concept-id belief-concept-id task]]]
   (let [terms (:terms task)]
-    (if (every? term-exists? terms)
+    (if (term-exists? (:statement task))
       (let [task (dissoc task :terms)]
         (when task-concept-id
           (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
             (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
-        (doseq [term terms]
+        (let [term (:statement task)]
           (when-let [{c-ref :ref} ((:elements-map @c-bag) term)]
             (cast! c-ref [:task-msg [task]]))))
       (cast! (whereis :concept-manager) [:create-concept-msg [task-concept-id belief-concept-id task]]))))
@@ -50,7 +50,7 @@
       (when task-concept-id
         (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]
           (cast! c-ref [:link-feedback-msg [task belief-concept-id]])))
-      (doseq [term terms]
+      (let [term (:statement task)]
         (when (b/exists? @c-bag term)
           (when-let [{c-ref :ref} ((:elements-map @c-bag) term)]
             (cast! c-ref [:task-msg [task]])))))))

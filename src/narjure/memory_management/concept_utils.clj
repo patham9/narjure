@@ -90,7 +90,7 @@
   (let [els (:elements-map (:tasks state))      ; :priority-index ok here
         n (count els)
         p (round2 3 (reduce t-or 0 (for [[id {task :task}] els] ;rec
-                                    (if (concept-has-by-task-not-yet-recorded-link state task)
+                                    (if true #_(concept-has-by-task-not-yet-recorded-link state task)
                                       (first (:budget task))
                                       0.0)
                                     )))

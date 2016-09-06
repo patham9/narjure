@@ -9,7 +9,8 @@
     [narjure.memory-management.concept-utils :refer [concept-observable]]
     [taoensso.timbre :refer [debug info]]
     [narjure.debug-util :refer :all]
-    [narjure.control-utils :refer :all])
+    [narjure.control-utils :refer :all]
+    [nal.term_utils :refer [has-common-link-subterm]])
   (:refer-clojure :exclude [promise await]))
 
 (def aname :concept-selector)
@@ -20,10 +21,13 @@
   " creates a term-link between last-selected concept and the currently selected concept"
   [state selected]
   (when-let [last-selected (:last-selected state)] ;the last selected observable concept
-    (when (concept-observable (:id selected))   ; todo need to be able to link to itself here (&/, a, a) is valid sequence
-      (cast! (:ref selected) [:termlink-strengthen-msg [(:id last-selected)]])
-      (cast! (:ref last-selected) [:termlink-strengthen-msg [(:id selected)]])))
-  (when (concept-observable (:id selected))
+    (let [pre-temporal (and (concept-observable (:id selected))
+                    (concept-observable (:id last-selected)))
+          pre-semantic (has-common-link-subterm (:id selected) (:id last-selected))]
+      (when (or pre-temporal pre-semantic)   ; todo need to be able to link to itself here (&/, a, a) is valid sequence
+        (cast! (:ref selected) [:termlink-strengthen-msg [(:id last-selected) pre-temporal]])
+        (cast! (:ref last-selected) [:termlink-strengthen-msg [(:id selected) pre-temporal]]))))
+  (when true #_(concept-observable (:id selected))
     (set-state! (assoc state :last-selected selected))))
 
 (defn inference-tick-handler

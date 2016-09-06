@@ -28,7 +28,7 @@
   "Create a concept for each term in statement, if they dont
    exist. Then post the task back to task-dispatcher."
   [from [_ [task-concept-id belief-concept-id {:keys [statement] :as task}]]]
-  (doseq [term (:terms task)]
+  (let [term (:statement task)]
     (when-not (b/exists? @c-bag term)
       (make-general-concept term)))
   (cast! from [:task-from-cmanager-msg [task-concept-id belief-concept-id task]]))

@@ -65,7 +65,7 @@
     (println (str "above truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'above :belief :event)))
                   " below truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'below :belief :event)))
                   " equal truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'equal :belief :event)))))
-    (nars-input-narsese "e! :|:"))
+    (nars-input-narsese "equal! :|:"))
   (when (= (mod (:iteration state) 250) 1)
     (println "rand action")
     (nars-input-narsese (str (rand-nth ["self_op_up! :|:"

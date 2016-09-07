@@ -20,7 +20,7 @@
     (let [op (nth st 2)]
       (and (not (coll? op))
            (clojure.string/starts-with? (name op) "op_")))
-    false))
+    (clojure.string/starts-with? (str st) "self_op_")))
 
 (defn negation-of-operation?
   "Checks whether st is the negation of an operation"

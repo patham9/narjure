@@ -25,8 +25,8 @@
                                       :budget (budgets :belief)
                                       )
         operation (:statement operationgoal)
-        arguments (rest (second operation))
-        operator (nth operation 2)]
+        arguments (if (coll? operation) (rest (second operation)) [])
+        operator (if (coll? operation) (nth operation 2) operation)]
     (try (let [func (@registered-operator-functions operator)]
            (if (not= nil func)
              (let [success (func arguments operationgoal)]

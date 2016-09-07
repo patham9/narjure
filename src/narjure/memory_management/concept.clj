@@ -115,7 +115,7 @@
   [from [_ [term]]]
   (try (let
          [termlinks (:termlinks @state)
-          old-link-strength (termlinks term)
+          old-link-strength (when termlinks (termlinks term))
           temporal-link-bonus [1.0 0.99]
           new-link-strength (calc-link-strength term (if old-link-strength old-link-strength temporal-link-bonus))]
          (set-state! (assoc-in @state [:termlinks term] new-link-strength)))

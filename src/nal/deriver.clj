@@ -94,10 +94,10 @@
   Some of these need detailled analysis and a lot of care / inference rule condition improvement to get rid of." ;TODO extent
   [term]
   (and
-    (coll? term)
+    #_(coll? term)
 
     ;dont allow a. terms, only NAL statements are allowed (TODO discuss NAL9 name operator handling)
-    (some #(= % (first term)) '[--> <-> ==> pred-impl retro-impl
+    #_(some #(= % (first term)) '[--> <-> ==> pred-impl retro-impl
                                 =|> <=> </> <|>
                                 -- || conj seq-conj &|])
 

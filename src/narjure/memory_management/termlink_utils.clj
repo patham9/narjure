@@ -51,7 +51,7 @@
 (defn forget-termlinks-relative []
   "Forget termlinks relative."
   (set-state! (assoc @state :termlinks (apply merge (for [[tl [f c]] (:termlinks @state)]
-                                                      {tl (revision [f c] [0.0 0.01])})))))
+                                                      {tl (revision [f c] [0.0 0.001])})))))
 
 (defn add-termlink
   "Adds a termlink with term tl and strength strength."

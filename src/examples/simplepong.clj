@@ -1,4 +1,4 @@
-(ns examples.pong
+(ns examples.simplepong
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [gui.hnav :as hnav]

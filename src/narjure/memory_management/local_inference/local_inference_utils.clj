@@ -13,7 +13,8 @@
     [nal.deriver :refer [occurrence-type]]
     [nal.deriver.truth :refer [t-and t-or frequency confidence expectation]]
     [nal.deriver.projection-eternalization :refer [project-eternalize-to]]
-    [narjure.debug-util :refer :all])
+    [narjure.debug-util :refer :all]
+    [narjure.budget-functions :refer [derived-budget]])
   (:refer-clojure :exclude [promise await]))
 
 (defn truth-round
@@ -106,7 +107,10 @@
   [t1 t2]
   (let [revised-truth (nal.deriver.truth/revision (:truth t1) (:truth t2))
         evidence (make-evidence (:evidence t1) (:evidence t2))]
-    (dissoc (assoc t1 :truth revised-truth :source :derived :evidence evidence :budget (max-budget (:budget t1) (:budget t2))) :record)))
+    (let [revised-task (dissoc (assoc t1 :truth revised-truth :source :derived :evidence evidence
+                                 #_:budget #_(max-budget (:budget t1) (:budget t2)))
+                       :record)]
+      (assoc revised-task :budget (derived-budget t1 revised-task)))))
 
 (defn answer-quality
   "The quality of an answer, which is the confidence for y/n questions,

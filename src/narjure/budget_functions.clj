@@ -8,8 +8,7 @@
      [defaults :refer :all]
      [global-atoms :refer :all]
      [control-utils :refer [round2]]
-     [debug-util :refer :all]]
-    [narjure.memory-management.concept-utils :refer :all]))
+     [debug-util :refer :all]]))
 
 (defn truth-to-quality
   "The task quality judged by its truth."
@@ -60,7 +59,7 @@
           durability (/ (second (:budget task)) (Math/sqrt (:sc derived-task)))
           truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
                                                   0.0)
-          rescale-factor 0.4 ;should probably not above input belief quality!
+          rescale-factor 0.1 ;should probably not above input belief quality!
           quality (* truth-quality
                      rescale-factor)]
       (structural-reward-budget [priority durability quality] derived-task))))

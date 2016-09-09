@@ -121,7 +121,7 @@
     (catch Exception e () #_(println "fail"))))
 
 (defn not-outdated-record-entry [[id time]]
-  (< (- @nars-time time) 250))
+  (< (- @nars-time time) 25))
 
 (defn get-termlink-endpoints
   "Get the link endpoints, namely the concepts which the concept links to: their id as well as priority."

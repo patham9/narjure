@@ -32,11 +32,16 @@
 (defn task-handler
   [from [_ [task_]]]
   (when true
-    (let [task (if (= (:occurrence task_) :eternal)
-                 (assoc task_ :budget [(* 0.3 (first (:budget task_)))
-                                       (second (:budget task_))
-                                       (nth (:budget task_) 2)])
-                 task_)]
+    (let [foreign-penalty (if (not= (:statement task_)
+                            (:id @state))
+                            0.5
+                            1.0)
+          eternal-penalty (if (= (:occurrence task_) :eternal)
+                            0.5
+                            1.0)
+          task (assoc task_ :budget [(* foreign-penalty eternal-penalty (first (:budget task_)))
+                                     (second (:budget task_))
+                                     (nth (:budget task_) 2)])]
       (debuglogger search display ["task processed:" task])
 
       (refresh-termlinks task)

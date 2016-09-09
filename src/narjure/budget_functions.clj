@@ -55,7 +55,7 @@
   [task derived-task]
   (when (< (:sc derived-task) max-term-complexity)
     (let [activation-gain 0.8
-          priority (* activation-gain (first (:budget task)))
+          priority (/ (* activation-gain (first (:budget task))) (* (:sc derived-task) (:sc derived-task)))
           durability (/ (second (:budget task)) (Math/sqrt (:sc derived-task)))
           truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
                                                   0.0)

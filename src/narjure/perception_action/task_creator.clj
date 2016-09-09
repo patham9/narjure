@@ -73,6 +73,9 @@
      :statement  content
      :parent-statement (:parent-statement sentence)}))
 
+(defn budgetify [task]
+  )
+
 (defn event?
   "tests whether the passed task sentence is an event"
   [sentence]

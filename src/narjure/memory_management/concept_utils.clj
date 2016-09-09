@@ -92,7 +92,7 @@
         p (round2 3 (reduce t-or 0 (for [[id {task :task}] els] ;rec
                                     (if (concept-has-by-task-not-yet-recorded-link state task)
                                       (first (:budget task))
-                                      0.0)
+                                      (nth (:budget task) 2))
                                     )))
         q (round2 3 (reduce + 0 (for [[id {task :task}] els] (nth (:budget task) 2))))
         k  0.9999                                             ; long term quality forgetting

@@ -63,7 +63,7 @@
 
 (defn calc-link-strength
   ([tl]
-    (calc-link-strength tl [0.5 0.0]))
+    (calc-link-strength tl [0.5 0.01]))
   ([tl old-strength]
   old-strength
     #_(let [prio-me (concept-priority (:id @state))

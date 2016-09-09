@@ -116,7 +116,7 @@
   (try (let
          [termlinks (:termlinks @state)
           old-link-strength (when termlinks (termlinks term))
-          temporal-link-bonus [1.0 0.99]
+          temporal-link-bonus [0.5 0.01]
           new-link-strength (calc-link-strength term (if old-link-strength old-link-strength temporal-link-bonus))]
          (set-state! (assoc-in @state [:termlinks term] new-link-strength)))
        (catch Exception e (println "termlink strenghten fatal error"))))

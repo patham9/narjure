@@ -55,7 +55,7 @@
                                                                        temporal-distance))))
         k-quality-occurrence-decay 10000.0
         distance-for-quality (/ temporal-distance k-quality-occurrence-decay)
-        occurrence-decay-for-quality (if (= el-time :eternal) 1.0 (/ 1.0 (+ 1.0 (* distance-for-quality
+        occurrence-decay-for-quality (if (= el-time :eternal) 0.9 (/ 1.0 (+ 1.0 (* distance-for-quality
                                                                                    distance-for-quality))))
         new-quality (* occurrence-decay-for-quality (nth budget 2))
         fr (Math/exp (* -1.0 (* lambda (- @nars-time last-forgotten))))

@@ -102,15 +102,19 @@
       (set-state! (assoc @state :tasks bag))))
   (set-state! (assoc @state :tasks (b/add-element (:tasks @state) (make-element task)))))
 
+(defn inc-budget ;task was revised, this is further evidence for the quality of the task
+  [[p d q]] ;as it seems to take part in summarizing experience instead of describing one-time phenomena
+  [(t-or p 0.3) (t-or d 0.1) (t-or q 0.3)])
+
 (defn revise
   "Revision of two tasks."
   [t1 t2]
   (let [revised-truth (nal.deriver.truth/revision (:truth t1) (:truth t2))
         evidence (make-evidence (:evidence t1) (:evidence t2))]
     (let [revised-task (dissoc (assoc t1 :truth revised-truth :source :derived :evidence evidence
-                                 #_:budget #_(max-budget (:budget t1) (:budget t2)))
+                                 :budget (max-budget (:budget t1) (:budget t2)))
                        :record)]
-      (assoc revised-task :budget (derived-budget t1 revised-task)))))
+      (assoc revised-task :budget (inc-budget (:budget revised-task)) #_(derived-budget t1 revised-task)))))
 
 (defn answer-quality
   "The quality of an answer, which is the confidence for y/n questions,

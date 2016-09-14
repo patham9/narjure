@@ -43,7 +43,7 @@
                          (or (not (:truth derived-task))
                              (> (rand) 0.98)
                              (> (first (:truth derived-task)) 0.5))
-                         (coll? (:statement derived-task)))
+                         #_(coll? (:statement derived-task)))
                 (cast! derived-load-reducer [:derived-sentence-msg [task-concept-id
                                                                     belief-concept-id
                                                                     derived-task]])))))))

@@ -37,7 +37,7 @@
                    #_(when (coll? success)                  ;TODO collides with operation task idea
                        (doseq [custom-feedback success] ;also allowing custom feedback tasks
                          (cast! (whereis :task-creator) [:sentence-msg custom-feedback]))))
-                 (cast! (whereis :task-creator) [:sentence-msg (assoc feedback :truth
+                 #_(cast! (whereis :task-creator) [:sentence-msg (assoc feedback :truth
                                                                                [(- 1.0 (first (:truth feedback)))
                                                                                 (second (:truth feedback))])])))
              (do ;if no function is registered, just enter the feedback, eliminates the issue that we need to register ops just to use them in examples

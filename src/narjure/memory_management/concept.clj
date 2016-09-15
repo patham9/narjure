@@ -160,7 +160,7 @@
   "Initialises actor: registers actor and sets actor state"
   [name]
   (set-state! {:id                       name
-               :priority                 0.5
+               :priority                 0.1
                :quality                  0.0
                :tasks                    (b/default-bag max-tasks)
                :termlinks                {}

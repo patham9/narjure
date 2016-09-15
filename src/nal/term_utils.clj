@@ -250,6 +250,7 @@
         additional-condition (fn [z] (and (not= (second z) nil)
                                           (operation? ((second z) '?operation))
                                           (not (operation? ((second z) '?precondition)))
+                                          (interval? ((second z) '?interval1))
                                           (not (negation-of-operation? ((second z) '?precondition)))
                                           (not (operation? ((second z) '?goal)))
                                           (not (negation-of-operation? ((second z) '?goal)))))]

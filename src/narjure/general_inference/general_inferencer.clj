@@ -5,7 +5,7 @@
      [actors :refer :all]]
     [nal
      [deriver :refer [inference]]
-     [term_utils :refer [syntactic-complexity]]]
+     [term_utils :refer [syntactic-complexity operation?]]]
     [nal.deriver :refer [inference]]
     [taoensso.timbre :refer [debug info]]
     [narjure
@@ -42,7 +42,12 @@
                          (> (first budget) priority-threshold)
                          (or (not (:truth derived-task))
                              (> (rand) 0.98)
-                             (> (first (:truth derived-task)) 0.5))
+                             (>= (first (:truth derived-task)) 0.5))
+                         (let [st (:statement derived-task)]
+                           (not (and (coll? st)
+                                     (or (= (first st) 'pred-impl)
+                                         (= (first st) '=|>))
+                                     (operation? (last st)))))
                          #_(coll? (:statement derived-task)))
                 (cast! derived-load-reducer [:derived-sentence-msg [task-concept-id
                                                                     belief-concept-id

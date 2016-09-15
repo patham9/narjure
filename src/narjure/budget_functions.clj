@@ -17,6 +17,14 @@
         positive-truth-bias 0.75]
     (max exp (* (- 1.0 exp) positive-truth-bias))))
 
+(defn occurrence-penalty-tr
+  "Occurrence budget penalty. Currently not used as forgetting seems to suffice."
+  [occ]
+  (let [k 0.0001]
+    (if (= occ :eternal)
+      1.0
+      (/ 1.0 (+ 1.0 (* k (Math/abs (- @nars-time occ))))))))
+
 (defn highest-desire-in-respect-to-now
   "The highest desire value in respect to current nars-time."
   [concept-term]
@@ -54,12 +62,12 @@
   "The budget of a by general inference derived task."
   [task derived-task]
   (when (< (:sc derived-task) max-term-complexity)
-    (let [activation-gain 0.8
-          priority (/ (* activation-gain (first (:budget task))) (* (:sc derived-task) (:sc derived-task)))
-          durability (/ (second (:budget task)) (Math/sqrt (:sc derived-task)))
+    (let [durability (/ (second (:budget task)) (:sc derived-task))
           truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
                                                   0.0)
+          priority (* (t-or truth-quality (first (:budget task)))
+                      (occurrence-penalty-tr (:occurrence derived-task)))
           rescale-factor 0.1 ;should probably not above input belief quality!
-          quality (* truth-quality
+          quality (* priority
                      rescale-factor)]
       (structural-reward-budget [priority durability quality] derived-task))))

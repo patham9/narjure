@@ -10,7 +10,7 @@
 
 (def py (atom 280))
 (def direction (atom 0))
-(def barheight 50)
+(def barheight 150)
 (def fieldmax 760)
 (def fieldmin 20)
 
@@ -31,13 +31,13 @@
                                       (when (= (:source operationgoal) :derived)
                                         #_(println "system decided up"))
                                       (reset! direction -1)
-                                      true #_(with-print (not= @py fieldmin)))))
+                                      (with-print (not= @py fieldmin)))))
   (nars-register-operation 'self_op_down (fn [args operationgoal]
                                       (do
                                         (when (= (:source operationgoal) :derived)
                                           #_(println "system decided down"))
                                         (reset! direction 1)
-                                        true #_(with-print (not= @py (- fieldmax barheight (- fieldmin)))))))
+                                        (with-print (not= @py (- fieldmax barheight (- fieldmin)))))))
 
   (merge hnav/states {:ball-px 380
                       :ball-py 400
@@ -107,8 +107,8 @@
              (<= (:ball-py state) (+ @py barheight)))
       (when (not= @updown-state "equal")
         (nars-input-narsese "equal. :|: %1.0;0.9%")
-        (nars-input-narsese "above. :|: %0%")
-        (nars-input-narsese "below. :|: %0%")
+        #_(nars-input-narsese "above. :|: %0%")
+        #_(nars-input-narsese "below. :|: %0%")
         (reset! updown-state "equal")
         #_(when allow-continuous-feedback
             ;(println "good NARS")
@@ -117,16 +117,16 @@
       (if (> (:ball-py state) @py)
         (when (not= @updown-state "below")
           (nars-input-narsese "below. :|:")
-          (nars-input-narsese "above. :|: %0%")
-          (nars-input-narsese "equal. :|: %0%")
+          #_(nars-input-narsese "above. :|: %0%")
+          #_(nars-input-narsese "equal. :|: %0%")
           (reset! updown-state "below")
           #_(when allow-continuous-feedback
               ;(println "bad NARS")
               (nars-input-narsese "<{SELF} --> [good]>. :|: %0.0;0.9%")))
         (when (not= @updown-state "above")
           (nars-input-narsese "above. :|:")
-          (nars-input-narsese "below. :|: %0%")
-          (nars-input-narsese "equal. :|: %0%")
+          #_(nars-input-narsese "below. :|: %0%")
+          #_(nars-input-narsese "equal. :|: %0%")
           (reset! updown-state "above")
           #_(when allow-continuous-feedback
               ;(println "bad NARS")

@@ -70,6 +70,11 @@
           (let [new-goal (increased-goal-budget-by-quest goal-task-projected-to-quest quest)]
             (update-task-in-tasks state (assoc goal-task :budget (:budget new-goal)) goal-task)))))))
 
+(defn interval?
+  "Is the term an interval?"
+  [content]
+  (and (sequential? content) (= (first content) :interval)))
+
 (def truth-tolerance 0.005)                                 ;TODO put to nal.deriver.truth?
 ;<(&&,<(*,{SELF}) --> op_down>,(&/,<ballpos --> [above]>,i2048)) =/> <ballpos --> [below]>>. :|12197|: %1.0;0.20954585215002955%" "
 (defn best-operation-selection [beliefs goal]
@@ -125,6 +130,7 @@
                                                                      (= ((second z) '?goal) (:statement goal))
                                                                      (operation? ((second z) '?operation))
                                                                      (not (operation? ((second z) '?precondition)))
+                                                                     (interval? ((second z) '?interval1))
                                                                      (not (negation-of-operation? ((second z) '?precondition)))
                                                                      (not (operation? ((second z) '?goal)))
                                                                      (not (negation-of-operation? ((second z) '?goal)))))
@@ -290,7 +296,7 @@
                 ;(println (str  "goal: " operation))
                 (when-not (:execution-evidence @state)
                   (set-state! (assoc @state :execution-evidence '())))
-                (when (some (fn [z] (not (some #{z} (:execution-evidence @state)))) (:evidence operation))
+                (when true #_(some (fn [z] (not (some #{z} (:execution-evidence @state)))) (:evidence operation))
                   (cast! (whereis :operator-executor) [:operator-execution-msg operation])
                   (set-state! (assoc @state :execution-evidence (take 50 (concat (:evidence operation) (:execution-evidence @state)))))
                   )))))))

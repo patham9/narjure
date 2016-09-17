@@ -5,10 +5,10 @@
      [actors :refer :all]]
     [nal
      [deriver :refer [inference]]
-     [term_utils :refer [syntactic-complexity operation?]]]
-    [nal.deriver :refer [inference]]
-    [taoensso.timbre :refer [debug info]]
-    [narjure
+     [term_utils :refer [syntactic-complexity operation? interval?]]]
+[nal.deriver :refer [inference]]
+[taoensso.timbre :refer [debug info]]
+[narjure
      [debug-util :refer :all]
      [budget-functions :refer [derived-budget]]
      [defaults :refer :all]
@@ -44,10 +44,20 @@
                              (> (rand) 0.98)
                              (>= (first (:truth derived-task)) 0.5))
                          (let [st (:statement derived-task)]
-                           (not (and (coll? st)
-                                     (or (= (first st) 'pred-impl)
-                                         (= (first st) '=|>))
-                                     (operation? (last st)))))
+                           (and
+                                (not (and (coll? st)     ;not allows =/> operation   TODO probably revise
+                                          (or (= (first st) 'pred-impl)
+                                              (= (first st) '=|>))
+                                          (operation? (last st))))
+                                (not (and (coll? st)   ;not allow interval to be the subject of predicate of ==>
+                                          (or (= (first st) 'pred-impl)
+                                              (= (first st) '=|>)
+                                              (= (first st) '<|>)
+                                              (= (first st) '</>)
+                                              (= (first st) '==>)
+                                              (= (first st) '<=>))
+                                          (or (interval? (second st))
+                                              (interval? (nth st 2)))))))
                          #_(coll? (:statement derived-task)))
                 (cast! derived-load-reducer [:derived-sentence-msg [task-concept-id
                                                                     belief-concept-id

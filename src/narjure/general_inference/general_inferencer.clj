@@ -38,7 +38,7 @@
                                               :parent-statement (:statement task)
                                               :evidence evidence)]
               (when (and budget
-                         (< sc max-term-complexity)
+                         (< sc @max-term-complexity)
                          (> (first budget) priority-threshold)
                          (or (not (:truth derived-task))
                              (> (rand) 0.98)

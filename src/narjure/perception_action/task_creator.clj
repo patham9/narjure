@@ -87,11 +87,14 @@
   "Processes a :sentence-msg and generates a task, and an eternal task
    if the sentence is an event, and posts to task-dispatcher."
   [from [_ sentence]]
-  (let [syntactic-complexity (syntactic-complexity (:statement sentence))]
+  (let [synt-complexity (syntactic-complexity (:statement sentence))]
     (when true #_(< syntactic-complexity max-term-complexity)
+      (reset! max-term-complexity (max @max-term-complexity   ;adapt max. term complexity in respect to examples for now
+                                      (+ term-complexity-offset
+                                         synt-complexity)))
       (let [new-task (create-new-task
                        sentence
-                       syntactic-complexity)
+                       synt-complexity)
             task-dispatcher (whereis :task-dispatcher)]
         (cast! task-dispatcher [:task-msg [nil nil new-task]])
         (output-task :input new-task)

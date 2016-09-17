@@ -102,6 +102,7 @@
 
 (defn run []
 
+  (reset! max-term-complexity max-term-complexity-init)
   (info "reset question filter")
   (reset! last-qu-answers [])
   (info "Resetting concepts bagss:")

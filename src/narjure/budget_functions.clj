@@ -61,7 +61,7 @@
 (defn derived-budget
   "The budget of a by general inference derived task."
   [task derived-task]
-  (when (< (:sc derived-task) max-term-complexity)
+  (when (< (:sc derived-task) @max-term-complexity)
     (let [durability (/ (second (:budget task)) (:sc derived-task))
           truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
                                                   0.0)

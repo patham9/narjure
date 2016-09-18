@@ -9,6 +9,8 @@
     [narjure.control-utils :refer :all]
     [narjure.global-atoms :refer :all]
     [narjure.defaults :refer :all]
+    [nal.term_utils :refer [not-statement-and-conceptid-equal
+                            statement-and-conceptid-equal]]
     [narjure.perception-action.task-creator :refer [event? get-id]]
     [narjure.memory-management.local-inference.local-inference-utils :refer :all]
     [nal.term_utils :refer :all]
@@ -179,7 +181,7 @@
     ;when task is confirmable and observabnle
     ;add an anticipation tasks to tasks
     (when (and (= (:task-type task) :belief)
-            (= (:statement task)                             ;only allow anticipation with concept content
+            (statement-and-conceptid-equal (:statement task)                             ;only allow anticipation with concept content
               (:id @state)))
       (when (and (confirmable-observable? task)
                  (> (:occurrence task) @nars-time))

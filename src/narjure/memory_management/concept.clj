@@ -5,6 +5,8 @@
      [actors :refer :all]]
     [taoensso.timbre :refer [debug info]]
     [clojure.core.unify :refer [unifier]]
+    [nal.term_utils :refer [not-statement-and-conceptid-equal
+                            statement-and-conceptid-equal]]
     [nal.deriver
      [truth :refer [w2c t-or t-and confidence frequency expectation revision]]
      [projection-eternalization :refer [project-eternalize-to]]]
@@ -32,7 +34,7 @@
 (defn task-handler
   [from [_ [task_]]]
   (when true
-    (let [foreign-penalty (if (not= (:statement task_)
+    (let [foreign-penalty (if (not-statement-and-conceptid-equal (:statement task_)
                             (:id @state))
                             0.5
                             1.0)
@@ -50,7 +52,7 @@
       (when-not (:observable @state)
         ;(println "obs1")
         (let [{:keys [occurrence source]} task]
-          (when (and (not= occurrence :eternal) (= source :input) (= (:statement task) (:id @state)))
+          (when (and (not= occurrence :eternal) (= source :input) (statement-and-conceptid-equal (:statement task) (:id @state)))
             (set-state! (assoc @state :observable true)))))
 
       #_(when (and (= (:task-type task) :goal)
@@ -74,7 +76,7 @@
   ;todo get a belief which has highest confidence when projected to task time
   (try
     (let [tasks (get-tasks state)
-          beliefs (filter #(and (= (:statement %) (:id @state))
+          beliefs (filter #(and (statement-and-conceptid-equal (:statement %) (:id @state))
                                 (= (:task-type %) :belief)) tasks)
           projected-belief-tuples (map (fn [z] [z (project-eternalize-to (:occurrence task) z @nars-time)]) beliefs)]
 

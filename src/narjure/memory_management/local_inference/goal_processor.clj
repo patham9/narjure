@@ -7,6 +7,8 @@
     [narjure.debug-util :refer [narsese-print]]
     [narjure.bag :as b]
     [narjure.defaults :refer [truth-value]]
+    [nal.term_utils :refer [not-statement-and-conceptid-equal
+                            statement-and-conceptid-equal]]
     [nal.term_utils :refer [syntactic-complexity termlink-subterms]]
     [nal.deriver.truth :refer [intersection deduction]]
     [narjure.debug-util :refer :all]
@@ -287,7 +289,7 @@
                                          (filter #(= (:task-type %) :goal) ;re-getting the goals because we also want our just added goal
                                                  (conj tasks task))))] ;needs new task as well
         (if (not-empty projected-goals)
-          (let [possible-operations (filter #(and (operation? (:statement %)) (execute? %) (= (:statement %) (:id @state))) projected-goals)
+          (let [possible-operations (filter #(and (operation? (:statement %)) (execute? %) (statement-and-conceptid-equal (:statement %) (:id @state))) projected-goals)
                 operation (if (not-empty possible-operations)
                             (apply max-key confidence possible-operations)
                             nil)]

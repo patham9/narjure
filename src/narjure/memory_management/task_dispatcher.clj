@@ -3,6 +3,7 @@
     [co.paralleluniverse.pulsar
      [core :refer :all]
      [actors :refer :all]]
+    [nal.term_utils :refer [concept-term-transform]]
     [narjure.global-atoms :refer [c-bag]]
     [narjure.memory-management.local-inference.local-inference-utils :refer [get-task-id]]
     [narjure.bag :as b]
@@ -28,8 +29,10 @@
   "If concept, or any sub concepts, do not exist post task to concept-creator,
    otherwise, dispatch task to respective concepts. Also, if task is an event
    dispatch task to event buffer actor."
-  [from [_ [task-concept-id belief-concept-id task]]]
-  (let [terms (:terms task)]
+  [from [_ [task-concept-id_ belief-concept-id_ task]]]
+  (let [task-concept-id (concept-term-transform task-concept-id_)
+        belief-concept-id (concept-term-transform belief-concept-id_)
+        terms (map concept-term-transform (:terms task))]
     (if (every? term-exists? terms)
       (let [task (dissoc task :terms)]
         (when task-concept-id
@@ -44,8 +47,8 @@
   "If concept, or any sub concepts, do not exist post task to concept-creator,
    otherwise, dispatch task to respective concepts. Also, if task is an event
    dispatch task to event buffer actor."
-  [from [_ [task-concept-id belief-concept-id task]]]
-  (let [terms (:terms task)]
+  [from [_ [task-concept-id belief-concept-id task]]] ;interval transform already applied to task-concept-id, belief-concept-id
+  (let [terms (map concept-term-transform (:terms task))]
     (let [task (dissoc task :terms)]
       (when task-concept-id
         (when-let [{c-ref :ref} ((:elements-map @c-bag) task-concept-id)]

@@ -55,17 +55,6 @@
 
 (defn placeholder? [t] (= '_ t))
 
-(defn termlink-subterms
-  "Extract the termlink relevant subterms of the term up to 3 levels as demanded by the NAL rules"
-  ([level content]
-   (if (and (< level 3) (compound? content))
-     (reduce set/union #{content} (map (partial termlink-subterms (inc level)) content))
-     #{content}))
-  ([content]
-   (remove #(or (logic-ops %) (interval? %) (placeholder? %) (variable? %))
-           (termlink-subterms 0 content))))
-
-
 (defn is-singular-sequence [st]
   "Checks whether the sequence is of (&/,a) form"
   (and (coll? st)
@@ -227,6 +216,16 @@
 (defn not-statement-and-conceptid-equal [statement concept-id]
   "not same in respect to intervals"
   (not (statement-and-conceptid-equal statement concept-id)))
+
+(defn termlink-subterms
+  "Extract the termlink relevant subterms of the term up to 3 levels as demanded by the NAL rules"
+  ([level content]
+   (if (and (< level 3) (compound? content))
+     (reduce set/union #{content} (map (partial termlink-subterms (inc level)) content))
+     #{content}))
+  ([content]
+   (remove #(or (logic-ops %) (interval? %) (placeholder? %) (variable? %))
+           (map concept-term-transform (termlink-subterms 0 content)))))
 
 (defn no-truth-for-questions-and-quests [st]         ;sentence util
   "makes absolutely sure that goals and beliefs have no truth and desire value for now"

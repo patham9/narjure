@@ -46,8 +46,8 @@
                       :iteration 0}))
 
 "
-<(&/,(&/,below,i1,self_op_down),i1) =/> equal>.
-<(&/,(&/,above,i1,self_op_up),i1) =/> equal>.
+<(&/,(&/,below,i4,self_op_down),i4) =/> equal>.
+<(&/,(&/,above,i4,self_op_up),i4) =/> equal>.
 "
 
 (def allow-continuous-feedback true)

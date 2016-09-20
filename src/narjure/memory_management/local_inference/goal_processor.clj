@@ -205,9 +205,10 @@
                         :budget     (:budget goal)
                         :task-type  :goal
                         :sc (syntactic-complexity statement)}]
-          (println (str "based on " (best-option :debug-belief)))
+
           (when (> (expectation (:truth new-task)) decision-threshold)
-            (println (str "operator selector sending to task-creator " (:statement new-task) (:truth new-task) (expectation (:truth new-task))))
+            (println (str "based on " (best-option :debug-belief)))
+            #_(println (str "operator selector sending to task-creator " (:statement new-task) (:truth new-task) (expectation (:truth new-task))))
             ;create prediction for consequence:
             (let [
                   cont (unimap '?goal)

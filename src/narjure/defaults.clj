@@ -40,7 +40,7 @@
 
 (def ^{:type double} horizon 1)                             ; personality factor for evidential horizon
 (def max-evidence 10)                                       ; maximum length of evidence trail
-(def temporal-window-duration 10)                           ; number of system cycles to consider as concurrent
+(def temporal-window-duration 2)                           ; number of system cycles to consider as concurrent
 (def term-complexity-offset 8) ;todo a better budget function instead
 (def max-term-complexity-init 9)
 (def max-term-complexity (atom max-term-complexity-init))                                ; maximum number of terms and sub terms in a statement - syntactic complexity

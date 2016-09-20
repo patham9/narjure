@@ -43,8 +43,8 @@
                       :iteration 0}))
 
 "
-<(&/,(&/,<ballpos --> [below]>,i1,<(*,{SELF}) --> op_down>),i1) =/> <ballpos --> [equal]>>.
-<(&/,(&/,<ballpos --> [above]>,i1,<(*,{SELF}) --> op_up>),i1) =/> <ballpos --> [equal]>>.
+<(&/,(&/,<ballpos --> [below]>,i4,<(*,{SELF}) --> op_down>),i4) =/> <ballpos --> [equal]>>.
+<(&/,(&/,<ballpos --> [above]>,i4,<(*,{SELF}) --> op_up>),i4) =/> <ballpos --> [equal]>>.
 "
 
 (def allow-continuous-feedback true)

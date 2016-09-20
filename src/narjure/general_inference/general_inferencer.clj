@@ -22,7 +22,7 @@
   "Processes :do-inference-msg:
     generates derived results, budget and occurrence time for derived tasks.
     Posts derived sentences to task creator"
-  [from [msg [task-concept-id belief-concept-id task belief]]]
+  [from [msg [task-concept-id belief-concept-id task belief debug]]]
   (try
     (when (non-overlapping-evidence? (:evidence task) (:evidence belief))
       (let [pre-filtered-derivations (inference task belief)
@@ -42,7 +42,8 @@
                          (> (first budget) priority-threshold)
                          (or (not (:truth derived-task))
                              (> (rand) 0.98)
-                             (>= (first (:truth derived-task)) 0.5))
+                             (not= (first (:statement derived-task)) '--)
+                             #_(>= (first (:truth derived-task)) 0.5))
                          (let [st (:statement derived-task)]
                            (and
                                 (not (and (coll? st)     ;not allows =/> operation   TODO probably revise
@@ -59,6 +60,8 @@
                                           (or (interval? (second st))
                                               (interval? (nth st 2)))))))
                          #_(coll? (:statement derived-task)))
+                #_(when debug
+                  (println (str "|||||\n" derived-task)))
                 (cast! derived-load-reducer [:derived-sentence-msg [task-concept-id
                                                                     belief-concept-id
                                                                     derived-task]])))))))

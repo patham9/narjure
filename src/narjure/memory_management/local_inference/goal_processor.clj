@@ -18,7 +18,7 @@
     [clojure.core.unify :refer [unify]]
     [nal.term_utils :refer [operation? negation-of-operation? syntactic-complexity]]
     [narjure.memory-management.local-inference.local-inference-utils :refer :all]
-    [nal.deriver.truth :refer [t-or frequency confidence expectation desire-strong]]
+    [nal.deriver.truth :refer [t-or frequency confidence expectation desire-strong intersection]]
     [nal.deriver.projection-eternalization :refer [project-eternalize-to]])
   (:refer-clojure :exclude [promise await]))
 
@@ -94,10 +94,10 @@
    <(&/,<{ball} --> [down]>,move_up({SELF})) =/> <{ball} --> [equal]>>. %0.4;09% Premise   <- truth_B
     <{ball} --> [equal]>!  Premise                                                        <- desire
     |-
-    (&/,<{ball} --> [down]>,move_up({SELF}))!  Desire:Strong
+    (&/,<{ball} --> [down]>,move_up({SELF}))!  Desire:Deduction
     <{ball} --> [down]>.         Premise                                        <- truth_A
     |-
-    move_up({SELF})!  Desire:Strong
+    move_up({SELF})!  Desire:Deduction
 
   for goal <{ball} --> [equal]>!
   <(&/,<{ball} --> [up]>,move_up({SELF})) =/>
@@ -108,18 +108,19 @@
   <{ball} --> [equal]>>. %0.4;09%"
 
   #_(when (and (= (:id @state) (:statement goal))
-             (= (:occurrence goal) :eternal)
-             (= (:task-type goal) :goal)
-             (= (:statement goal) '[--> ballpos [int-set equal]])
-             (println "concept ballpos equ goal processed")))
+               (= (:occurrence goal) :eternal)
+               (= (:task-type goal) :goal)
+               (= (:statement goal) '[--> ballpos [int-set equal]])
+               (println "concept ballpos equ goal processed")))
 
   ;1.: find all beliefs that predict the goal ''=/> =|>  <|> </>''
-  (when true #_(and (= (:occurrence goal) :eternal)
-             (= (:id @state) (:statement goal)))
+  (when (statement-and-conceptid-equal (:statement goal)
+                                       (:id @state)) #_(and (= (:occurrence goal) :eternal)
+                    (= (:id @state) (:statement goal)))
 
     #_(when (and (= (:task-type goal) :goal)
-               (= (:statement goal) '[--> ballpos [int-set equal]]))
-      (println "concept ballpos equ goal processed"))
+                 (= (:statement goal) '[--> ballpos [int-set equal]]))
+        (println "concept ballpos equ goal processed"))
 
     (let [debugme (= (:statement goal) '[--> ballpos [int-set equal]])
           println2 (fn [a] (when debugme (println a)))
@@ -161,25 +162,26 @@
                                                strongest-belief-about-now (project-eternalize-to @nars-time (:strongest-belief-event-about-now precondition-concept) @nars-time)]
                                            (when (and precondition-concept
                                                       (:truth strongest-belief-about-now)
-                                                      (:truth belief))
+                                                      (:truth belief)
+                                                      (> (second (:truth strongest-belief-about-now)) 0.3))
                                              [(:truth strongest-belief-about-now) (:truth belief) (:evidence strongest-belief-about-now) (:evidence belief) unificaton-map belief]))))
           #_print3 #_(println (str "step 3.3\n" (vec truth-A-B-unification-maps)))
           ;3.3 desire = desire value of goal
           desire (:truth (project-eternalize-to @nars-time goal @nars-time))
           #_print4 #_(println (str "step 3.4\n" desire))
-          ;3.4 execution desire expectation is: D=desire_strong(desire_strong(desire,truth_B),truth_A)
-          D-unification-maps (for [[truth-A truth-B evidence-A evidence-B unification-map debug-belief] (filter (fn [u] u) truth-A-B-unification-maps)]
+          ;3.4 execution desire expectation is: D=desire_strong(intersection(desire,truth_B),truth_A)          ;[truth-A truth-B evidence-A evidence-B unification-map debug-belief]
+          D-unification-maps (for [[truth-A truth-B evidence-A evidence-B unification-map debug-belief] (filter (fn [a] a) truth-A-B-unification-maps)]
                                (do
                                  #_(println (str desire truth-B truth-A))
-                                 {:D               (desire-strong (desire-strong desire truth-B) truth-A)
-                                 :evidence-A      evidence-A
-                                 :evidence-B      evidence-B
-                                 :unification-map unification-map
-                                 :debug-belief    debug-belief
-                                 :truth-A         truth-A
-                                 :truth-B         truth-B}))
+                                 {:D               (intersection (intersection desire truth-B) truth-A)
+                                  :evidence-A      evidence-A
+                                  :evidence-B      evidence-B
+                                  :unification-map unification-map
+                                  :debug-belief    debug-belief
+                                  :truth-A         truth-A
+                                  :truth-B         truth-B}))
 
-          ;print5 (println (str "3 get best\n" (vec D-unification-maps)))
+          #_print5 #_(println (str "3 get best\n" (vec D-unification-maps)))
           ;by using the one whose expectation(D) is highest
           k-expectation-randomize 50.0
           best-option (apply max-key (comp (fn [a] (+ a (/ (rand) k-expectation-randomize))) expectation :D) ;not always the best one but tend to.
@@ -189,56 +191,56 @@
           #_print6 #_(println (str "finished 3 \n"best-option))
           ]
 
-     ;4. create a result operation goal task with the from the predictive statement first operation and evidence trail being the summary of all evidence trails
-     (when (and best-option
-                (best-option :D)
-                (> (second (best-option :D)) truth-tolerance))
-       #_(println (str "had best operator option " (best-option :D)))
-       (let [unimap (:unification-map best-option)
-             statement (unimap '?operation)
-             new-task {:statement  statement
-                       :truth      (best-option :D)
-                       :evidence   (make-evidence (make-evidence (best-option :evidence-A) (best-option :evidence-B)) (:evidence goal))
-                       :occurrence @nars-time               ;needs to be occurrence time of now since task creator leaves derived task occurrences un-touched
-                       :budget     (:budget goal)
-                       :task-type  :goal
-                       :sc (syntactic-complexity statement)}]
-         (println (str "based on " (best-option :debug-belief)))
-         (println (str "operator selector sending to task-creator " (:statement new-task) (:truth new-task) (expectation (:truth new-task))))
-         (when (> (expectation (:truth new-task)) decision-threshold)
-           ;create prediction for consequence:
-           (let [
-                 cont (unimap '?goal)
-                 subj ['seq-conj (unimap '?precondition) (unimap '?interval1) (unimap '?operation)]]
-             #_(println "test1")
-             (cast! (whereis :task-dispatcher)
-                   [:task-msg
-                    [nil ;TODO could provide link feedback
-                     nil
-                     {:truth                          (deduction (intersection truth-value (:truth-A best-option))
-                                                                 (:truth-B best-option))
-                      :budget                         (:budget goal)
-                      :occurrence                     (+ @nars-time (second ((:unification-map best-option) '?interval2)))
-                      :source                         :derived
-                      :evidence                       (:evidence best-option)
-                      :sc                             (syntactic-complexity cont)
-                      :terms                          (termlink-subterms cont)
-                      :solution                       nil
-                      :task-type                      :belief
-                      :statement                      cont
-                      ;for hypothesis correction:
-                      :anticipation-precondition-task {:truth      (intersection truth-value (:truth-A best-option))
-                                                       :budget     (:budget goal)
-                                                       :occurrence @nars-time
-                                                       :source     :derived
-                                                       :evidence   (list (get-id))
-                                                       :task-type :belief
-                                                       :statement subj
-                                                       }}]])
-             #_(println "sent"))
-           )
-         (cast! (whereis :task-creator) [:derived-sentence-msg [nil nil new-task]])
-         )))))
+      ;4. create a result operation goal task with the from the predictive statement first operation and evidence trail being the summary of all evidence trails
+      (when (and best-option
+                 (best-option :D)
+                 (> (second (best-option :D)) truth-tolerance))
+        #_(println (str "had best operator option " (best-option :D)))
+        (let [unimap (:unification-map best-option)
+              statement (unimap '?operation)
+              new-task {:statement  statement
+                        :truth      (best-option :D)
+                        :evidence   (make-evidence (make-evidence (best-option :evidence-A) (best-option :evidence-B)) (:evidence goal))
+                        :occurrence @nars-time               ;needs to be occurrence time of now since task creator leaves derived task occurrences un-touched
+                        :budget     (:budget goal)
+                        :task-type  :goal
+                        :sc (syntactic-complexity statement)}]
+          (println (str "based on " (best-option :debug-belief)))
+          (when (> (expectation (:truth new-task)) decision-threshold)
+            (println (str "operator selector sending to task-creator " (:statement new-task) (:truth new-task) (expectation (:truth new-task))))
+            ;create prediction for consequence:
+            (let [
+                  cont (unimap '?goal)
+                  subj ['seq-conj (unimap '?precondition) (unimap '?interval1) (unimap '?operation)]]
+              #_(println "test1")
+              (cast! (whereis :task-dispatcher)
+                     [:task-msg
+                      [nil ;TODO could provide link feedback
+                       nil
+                       {:truth                          (intersection (intersection truth-value (:truth-A best-option))
+                                                                   (:truth-B best-option))
+                        :budget                         (:budget goal)
+                        :occurrence                     (+ @nars-time (second ((:unification-map best-option) '?interval2)))
+                        :source                         :derived
+                        :evidence                       (:evidence best-option)
+                        :sc                             (syntactic-complexity cont)
+                        :terms                          (termlink-subterms cont)
+                        :solution                       nil
+                        :task-type                      :belief
+                        :statement                      cont
+                        ;for hypothesis correction:
+                        :anticipation-precondition-task {:truth      (intersection truth-value (:truth-A best-option))
+                                                         :budget     (:budget goal)
+                                                         :occurrence @nars-time
+                                                         :source     :derived
+                                                         :evidence   (list (get-id))
+                                                         :task-type :belief
+                                                         :statement subj
+                                                         }}]])
+              #_(println "sent"))
+            )
+          (cast! (whereis :task-creator) [:derived-sentence-msg [nil nil new-task]])
+          )))))
 
 (defn process-goal
   "Process a goal task: revise, put into the task bag, check for satisfaction and whether it
@@ -271,7 +273,7 @@
           (answer-based-budget-change state (:task (first (b/get-by-id (:tasks @state) (get-task-id total-revision)))) (filter #(= (:task-type %) :quest) (get-tasks state)))
 
           #_(when (and (= (:id @state) (:statement total-revision))
-                  (= (:occurrence total-revision) :eternal)
+                       (= (:occurrence total-revision) :eternal)
                        (= (:task-type total-revision) :goal)
                        (= (:statement total-revision) '[--> ballpos [int-set equal]]))
               (println "concept ballpos equ goal processed"))
@@ -279,26 +281,26 @@
           (try
             (best-operation-selection (filter #(= (:task-type %) :belief) (get-tasks state))
                                       (:task (first (b/get-by-id (:tasks @state) (get-task-id total-revision)))))
-            (catch Exception e () #_(println "operator selector error")))
+            (catch Exception e () #_(println (str "operator selector error" e))))
           )))
 
-      ;best operation project goal to current time
-      ; if above decision threshold then execute#
-      (let [projected-goals (map #(project-eternalize-to @nars-time % @nars-time)
-                                 (filter #(= (:statement %) (:statement task))
-                                         (filter #(= (:task-type %) :goal) ;re-getting the goals because we also want our just added goal
-                                                 (conj tasks task))))] ;needs new task as well
-        (if (not-empty projected-goals)
-          (let [possible-operations (filter #(and (operation? (:statement %)) (execute? %) (statement-and-conceptid-equal (:statement %) (:id @state))) projected-goals)
-                operation (if (not-empty possible-operations)
-                            (apply max-key confidence possible-operations)
-                            nil)]
-            (when-not (= nil operation)                   ;todo change to - when operation
-                #_(println (str (:truth operation) (expectation (:truth operation))))
-                ;(println (str  "goal: " operation))
-                (when-not (:execution-evidence @state)
-                  (set-state! (assoc @state :execution-evidence '())))
-                (when true #_(some (fn [z] (not (some #{z} (:execution-evidence @state)))) (:evidence operation))
-                  (cast! (whereis :operator-executor) [:operator-execution-msg operation])
-                  (set-state! (assoc @state :execution-evidence (take 50 (concat (:evidence operation) (:execution-evidence @state)))))
-                  )))))))
+    ;best operation project goal to current time
+    ; if above decision threshold then execute#
+    (let [projected-goals (map #(project-eternalize-to @nars-time % @nars-time)
+                               (filter #(= (:statement %) (:statement task))
+                                       (filter #(= (:task-type %) :goal) ;re-getting the goals because we also want our just added goal
+                                               (conj tasks task))))] ;needs new task as well
+      (if (not-empty projected-goals)
+        (let [possible-operations (filter #(and (operation? (:statement %)) (execute? %) (statement-and-conceptid-equal (:statement %) (:id @state))) projected-goals)
+              operation (if (not-empty possible-operations)
+                          (apply max-key confidence possible-operations)
+                          nil)]
+          (when-not (= nil operation)                   ;todo change to - when operation
+            #_(println (str (:truth operation) (expectation (:truth operation))))
+            ;(println (str  "goal: " operation))
+            (when-not (:execution-evidence @state)
+              (set-state! (assoc @state :execution-evidence '())))
+            (when true #_(some (fn [z] (not (some #{z} (:execution-evidence @state)))) (:evidence operation))
+              (cast! (whereis :operator-executor) [:operator-execution-msg operation])
+              (set-state! (assoc @state :execution-evidence (take 50 (concat (:evidence operation) (:execution-evidence @state)))))
+              )))))))

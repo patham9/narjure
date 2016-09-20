@@ -10,7 +10,7 @@
 
 (def py (atom 280))
 (def direction (atom 0))
-(def barheight 150)
+(def barheight 100)
 (def fieldmax 760)
 (def fieldmin 20)
 
@@ -135,8 +135,8 @@
   (let [kset-x (+ 0.6 (/ (Math/random) 2.0))
         kset-y (+ 0.6 (/ (Math/random) 2.0))
         state2 (assoc state
-                 :ball-px #_(:ball-px state) (+ (:ball-px state) (* (:direction-x state) 1 3))
-                 :ball-py #_(:ball-py state) (+ (:ball-py state) (* (:direction-y state) 1 3)))
+                 :ball-px #_(:ball-px state) (+ (:ball-px state) (* (:direction-x state) 1 1))
+                 :ball-py #_(:ball-py state) (+ (:ball-py state) (* (:direction-y state) 1 1)))
 
         state3 (if (>= (:ball-px state2)                     ;collided on right wall
                        fieldmax)

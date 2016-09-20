@@ -58,7 +58,14 @@
                                               (= (first st) '==>)
                                               (= (first st) '<=>))
                                           (or (interval? (second st))
-                                              (interval? (nth st 2)))))))
+                                              (interval? (nth st 2)))))
+                                (not (and (coll? st)    ;also don't allow sequence
+                                          (or (= (first st) 'pred-impl)
+                                              (= (first st) '=|>)
+                                              (= (first st) '==>))
+                                          (and (coll? (nth st 2))
+                                                   (or (= (first (nth st 2)) 'seq-conj)
+                                                       (= (first (nth st 2)) '&|)))))))
                          #_(coll? (:statement derived-task)))
                 #_(when debug
                   (println (str "|||||\n" derived-task)))

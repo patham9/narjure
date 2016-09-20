@@ -59,7 +59,7 @@
                                                                                    distance-for-quality))))
         new-quality (* #_occurrence-decay-for-quality (nth budget 2))
         fr (Math/exp (* -1.0 (* lambda (- @nars-time last-forgotten))))
-        new-priority (max (round2 4 (* (:priority el) fr occurrence-decay))
+        new-priority (max (round2 4 (* (:priority el) (second budget)  #_fr occurrence-decay))
                           new-quality) ;quality of task
         new-budget [new-priority (second budget) new-quality]]
     (let [updated-task (assoc task :budget new-budget)]

@@ -45,7 +45,7 @@
 
 
 ;how big the truth expectation has to be in order to allow execution.
-(def decision-threshold 0.51)                                ;0.6
+(def decision-threshold 0.5)                                ;0.6
 
 (defn execute?
   "only execute if desire expectation is above decision threshold"

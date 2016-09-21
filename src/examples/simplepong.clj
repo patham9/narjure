@@ -62,7 +62,7 @@
   (when (= @direction 1)
     (reset! py (+ @py 3)))
   (when (= (mod (:iteration state) 25) 0)
-    (println (str "above truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'above :belief :event)))
+    #_(println (str "above truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'above :belief :event)))
                   " below truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'below :belief :event)))
                   " equal truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'equal :belief :event)))))
     (nars-input-narsese "equal! :|:"))

@@ -28,12 +28,12 @@
 (defn get-task-id
   "The ID defining when elements in the task bag need to be merged."
   [task]
-  [(:statement task) (:task-type task) (occurrence-type (:occurrence task))])
+  [(concept-term-transform (:statement task)) (:task-type task) (occurrence-type (:occurrence task))])
 
 (defn get-anticipation-id
   "The ID defining when elements in the anticipations bag need to be merged."
   [task]
-  [(:statement task) (:task-type task) (:occurrence task)])
+  [(concept-term-transform (:statement task)) (:task-type task) (:occurrence task)])
 
 (defn measure-budget
   "The budget evaluation for task bag element quality." ;TODO revise

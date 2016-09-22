@@ -15,7 +15,7 @@
   [t]
   (let [exp (expectation t)
         positive-truth-bias 0.75]
-    (max exp (* (- 1.0 exp) positive-truth-bias))))
+    exp #_(max exp (* (- 1.0 exp) positive-truth-bias))))
 
 (defn occurrence-penalty-tr
   "Occurrence budget penalty. Currently not used as forgetting seems to suffice."

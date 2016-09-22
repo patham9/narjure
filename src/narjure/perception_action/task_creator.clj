@@ -99,7 +99,14 @@
         (cast! task-dispatcher [:task-msg [nil nil new-task]])
         (output-task :input new-task)
         (when (event? sentence)
-          (when (belief? new-task)
+          (when (and @lastevent
+                     (= (:task-type new-task) :belief)
+                     (> (first (:truth new-task)) 0.5))
+            (cast! (whereis :inference-request-router) [:do-inference-msg [nil nil new-task @lastevent]]))
+
+          (when (and (belief? new-task)
+                     (not (operation? (:statement new-task)))
+                     (> (first (:truth new-task)) 0.5))
             (reset! lastevent new-task))
           (cast! task-dispatcher [:task-msg [nil nil (create-eternal-task new-task)]]))))))
 

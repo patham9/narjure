@@ -59,13 +59,17 @@
                                               (= (first st) '<=>))
                                           (or (interval? (second st))
                                               (interval? (nth st 2)))))
-                                (not (and (coll? st)    ;also don't allow sequence
+                                (not (and (coll? st)    ;also don't allow sequence as predicate
                                           (or (= (first st) 'pred-impl)
                                               (= (first st) '=|>)
                                               (= (first st) '==>))
                                           (and (coll? (nth st 2))
                                                    (or (= (first (nth st 2)) 'seq-conj)
-                                                       (= (first (nth st 2)) '&|)))))))
+                                                       (= (first (nth st 2)) '&|)))))
+                                (not (and (coll? st)    ;also don't allow sequence as predicate
+                                          (= (first st) 'seq-conj)
+                                          (= (:task-type derived-task) :belief)
+                                          (operation? (second st))))))
                          #_(coll? (:statement derived-task)))
                 #_(when debug
                   (println (str "|||||\n" derived-task)))

@@ -10,7 +10,7 @@
 
 (def py (atom 280))
 (def direction (atom 0))
-(def barheight 100)
+(def barheight 125)
 (def fieldmax 760)
 (def fieldmin 20)
 
@@ -66,7 +66,7 @@
                   " below truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'below :belief :event)))
                   " equal truth " (vec (:truth (lense-max-statement-confidence-projected-to-now 'equal :belief :event)))))
     (nars-input-narsese "equal! :|:"))
-  (when (= (mod (:iteration state) 250) 1)
+  (when (= (mod (:iteration state) 125) 1)
     (println "rand action")
     (nars-input-narsese (str (rand-nth ["self_op_up! :|:"
                                         "self_op_down! :|:"
@@ -118,7 +118,7 @@
         (when (not= @updown-state "below")
           (nars-input-narsese "below. :|:")
           #_(nars-input-narsese "above. :|: %0%")
-          #_(nars-input-narsese "equal. :|: %0%")
+          #_ (nars-input-narsese "equal. :|: %0%")
           (reset! updown-state "below")
           #_(when allow-continuous-feedback
               ;(println "bad NARS")

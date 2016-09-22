@@ -40,7 +40,7 @@
 
 (def ^{:type double} horizon 1)                             ; personality factor for evidential horizon
 (def max-evidence 10)                                       ; maximum length of evidence trail
-(def temporal-window-duration 2)                           ; number of system cycles to consider as concurrent
+(def temporal-window-duration 1)                           ; number of system cycles to consider as concurrent
 (def term-complexity-offset 8) ;todo a better budget function instead
 (def max-term-complexity-init 9)
 (def max-term-complexity (atom max-term-complexity-init))                                ; maximum number of terms and sub terms in a statement - syntactic complexity
@@ -48,7 +48,7 @@
 (def max-concept-selections 5)                              ; don't set higher if not on a sumpercomputer, will cause trouble
 (def termlink-single-sample-evidence-amount 0.01)           ; default conf for termlink truth value
 (def concept-max-termlinks 10)                              ; max size of termlink bag per concept
-(def max-tasks 10)                                          ; max size of task bag per concept
+(def max-tasks 20)                                          ; max size of task bag per concept
 (def max-anticipations 10)                                   ; max size of anticipation bag per concept
 (def max-concepts 1000)                                     ; do not make too small (less than 50) as causes cyclic issue between task-dispatcher and concept-manager
 (def max-derived-sentences 50)                              ; derived task bag capacity

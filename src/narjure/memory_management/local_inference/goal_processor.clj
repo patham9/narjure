@@ -210,7 +210,7 @@
             (println (str "based on " (best-option :debug-belief)))
             #_(println (str "operator selector sending to task-creator " (:statement new-task) (:truth new-task) (expectation (:truth new-task))))
             ;create prediction for consequence:
-            (let [
+            #_(let [
                   cont (unimap '?goal)
                   subj ['seq-conj (unimap '?precondition) (unimap '?interval1) (unimap '?operation)]]
               #_(println "test1")

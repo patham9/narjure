@@ -46,10 +46,6 @@
                              #_(>= (first (:truth derived-task)) 0.5))
                          (let [st (:statement derived-task)]
                            (and
-                                (not (and (coll? st)     ;not allows =/> operation   TODO probably revise
-                                          (or (= (first st) 'pred-impl)
-                                              (= (first st) '=|>))
-                                          (operation? (last st))))
                                 (not (and (coll? st)   ;not allow interval to be the subject of predicate of ==>
                                           (or (= (first st) 'pred-impl)
                                               (= (first st) '=|>)
@@ -58,18 +54,7 @@
                                               (= (first st) '==>)
                                               (= (first st) '<=>))
                                           (or (interval? (second st))
-                                              (interval? (nth st 2)))))
-                                (not (and (coll? st)    ;also don't allow sequence as predicate
-                                          (or (= (first st) 'pred-impl)
-                                              (= (first st) '=|>)
-                                              (= (first st) '==>))
-                                          (and (coll? (nth st 2))
-                                                   (or (= (first (nth st 2)) 'seq-conj)
-                                                       (= (first (nth st 2)) '&|)))))
-                                (not (and (coll? st)    ;also don't allow sequence as predicate
-                                          (= (first st) 'seq-conj)
-                                          (= (:task-type derived-task) :belief)
-                                          (operation? (second st))))))
+                                              (interval? (nth st 2)))))))
                          #_(coll? (:statement derived-task)))
                 #_(when debug
                   (println (str "|||||\n" derived-task)))

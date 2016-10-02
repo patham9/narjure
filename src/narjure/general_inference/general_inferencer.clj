@@ -13,7 +13,8 @@
      [debug-util :refer :all]
      [budget-functions :refer [derived-budget]]
      [defaults :refer :all]
-     [control-utils :refer [make-evidence non-overlapping-evidence?]]])
+     [control-utils :refer [make-evidence non-overlapping-evidence?]]]
+    [narjure.memory-management.local-inference.local-inference-utils :refer [get-task-id]])
   (:refer-clojure :exclude [promise await]))
 
 (def display (atom '()))
@@ -27,7 +28,7 @@
   (try
     (when (non-overlapping-evidence? (:evidence task) (:evidence belief))
       (let [pre-filtered-derivations (inference task belief)
-            filtered-derivations (filter #(not= (:statement %) (:parent-statement task)) pre-filtered-derivations)
+            filtered-derivations (filter #(not= (:statement %) (first (:parent-statement task))) pre-filtered-derivations)
             evidence (make-evidence (:evidence task) (:evidence belief))
             derived-load-reducer (whereis :derived-load-reducer)]
         (when-not (empty? evidence)
@@ -36,7 +37,7 @@
                   derived (assoc derived :sc sc)            ; required for derived-budget
                   budget (derived-budget task derived)
                   derived-task (assoc derived :budget budget
-                                              :parent-statement (:statement task)
+                                              :parent-statement (get-task-id task)
                                               :evidence evidence)
                   implies (fn [a b] (or (not a) b))]
               (when (and budget
@@ -50,7 +51,7 @@
                                           (= (:statement task)
                                              ['-- (:statement derived-task)]))
                                   (or (> (concept-priority (:statement derived-task)) negation-rule-priority-threshold)
-                                      (< (first (:truth derived-task)) 0.5)))) ;the task concept priority was high or frequency was smaller 0.5
+                                      (< (first (:truth task)) 0.5)))) ;the task concept priority was high or frequency was smaller 0.5
                          (let [st (:statement derived-task)]
                            (and
                                 (not (and (coll? st)   ;not allow interval to be the subject of predicate of ==>

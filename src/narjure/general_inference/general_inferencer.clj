@@ -28,7 +28,7 @@
   (try
     (when (non-overlapping-evidence? (:evidence task) (:evidence belief))
       (let [pre-filtered-derivations (inference task belief)
-            filtered-derivations (filter #(not= (:statement %) (first (:parent-statement task))) pre-filtered-derivations)
+            filtered-derivations (filter #(not= (:statement %) (second (:parent-statement task))) pre-filtered-derivations)
             evidence (make-evidence (:evidence task) (:evidence belief))
             derived-load-reducer (whereis :derived-load-reducer)]
         (when-not (empty? evidence)
@@ -37,7 +37,7 @@
                   derived (assoc derived :sc sc)            ; required for derived-budget
                   budget (derived-budget task derived)
                   derived-task (assoc derived :budget budget
-                                              :parent-statement (get-task-id task)
+                                              :parent-statement [(get-task-id task) (:statement task)]
                                               :evidence evidence)
                   implies (fn [a b] (or (not a) b))]
               (when (and budget

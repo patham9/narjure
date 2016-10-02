@@ -99,7 +99,7 @@
       (when (pos? (b/count-elements task-bag))
         (let [[el] (b/lookup-by-index task-bag (selection-fn (b/count-elements task-bag)))]
           (debuglogger search display ["selected inference task:" el])
-          (when-let [[c-id c-ref] (select-termlink-ref (:record (:task el)))]
+          (when-let [[c-id c-ref] (select-termlink-ref (:record (:task el)) (:lbudgets (:task el)))]
             (set-state!
               (assoc @state :tasks
                             (b/update-element task-bag

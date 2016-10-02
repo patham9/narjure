@@ -27,13 +27,13 @@
 
 (defn get-task-id
   "The ID defining when elements in the task bag need to be merged."
-  [task]
-  [(concept-term-transform (:statement task)) (:task-type task) (occurrence-type (:occurrence task))])
+  [task] ;check line 31 in general-inferencer on change!
+  [(:statement task) (:task-type task) (occurrence-type (:occurrence task))])
 
 (defn get-anticipation-id
   "The ID defining when elements in the anticipations bag need to be merged."
   [task]
-  [(concept-term-transform (:statement task)) (:task-type task) (:occurrence task)])
+  [(:statement task) (:task-type task) (:occurrence task)])
 
 (defn measure-budget
   "The budget evaluation for task bag element quality." ;TODO revise
@@ -98,7 +98,7 @@
   "Update an existing task bag element"
   [state task old-task]
   (let [[element bag] (b/get-by-id (:tasks @state) (get-task-id old-task))]
-    (when (not= nil element)
+    (when element
       (set-state! (assoc @state :tasks bag))))
   (set-state! (assoc @state :tasks (b/add-element (:tasks @state) (make-element task)))))
 
@@ -110,9 +110,12 @@
   "Revision of two tasks."
   [t1 t2]
   (let [revised-truth (nal.deriver.truth/revision (:truth t1) (:truth t2))
-        evidence (make-evidence (:evidence t1) (:evidence t2))]
+        evidence (make-evidence (:evidence t1) (:evidence t2))
+        lbudget-left (if-let [budg (:lbudgets t1)] budg {})
+        lbudget-right (if-let [budg (:lbudgets t2)] budg {})]
     (let [revised-task (dissoc (assoc t1 :truth revised-truth :source :derived :evidence evidence
-                                 :budget (max-budget (:budget t1) (:budget t2)))
+                                 :budget (max-budget (:budget t1) (:budget t2))
+                                         :lbudgets (merge lbudget-left lbudget-right))
                        :record)]
       (assoc revised-task :budget (inc-budget (:budget revised-task)) #_(derived-budget t1 revised-task)))))
 

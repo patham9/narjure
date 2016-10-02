@@ -8,6 +8,7 @@
      [term_utils :refer [syntactic-complexity operation? interval?]]]
 [nal.deriver :refer [inference]]
 [taoensso.timbre :refer [debug info]]
+    [narjure.memory-management.concept-utils :refer [concept-priority]]
 [narjure
      [debug-util :refer :all]
      [budget-functions :refer [derived-budget]]
@@ -36,14 +37,20 @@
                   budget (derived-budget task derived)
                   derived-task (assoc derived :budget budget
                                               :parent-statement (:statement task)
-                                              :evidence evidence)]
+                                              :evidence evidence)
+                  implies (fn [a b] (or (not a) b))]
               (when (and budget
                          (< sc @max-term-complexity)
                          (> (first budget) priority-threshold)
                          (or (not (:truth derived-task))
-                             (> (rand) 0.98)
-                             (not= (first (:statement derived-task)) '--)
-                             #_(>= (first (:truth derived-task)) 0.5))
+                             ;negation handling:
+                             (implies (or ;if one is the negation of the other, then the derivation is fine if
+                                          (= (:statement derived-task)
+                                             ['-- (:statement task)])
+                                          (= (:statement task)
+                                             ['-- (:statement derived-task)]))
+                                  (or (> (concept-priority (:statement derived-task)) negation-rule-priority-threshold)
+                                      (< (first (:truth derived-task)) 0.5)))) ;the task concept priority was high or frequency was smaller 0.5
                          (let [st (:statement derived-task)]
                            (and
                                 (not (and (coll? st)   ;not allow interval to be the subject of predicate of ==>

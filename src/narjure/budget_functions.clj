@@ -45,14 +45,17 @@
           (if (= precondition goal)
             nil
             (if goal-desire
-              (let [quality (max (nth budget 2)
-                                 (t-or (expectation (:truth derived-task)) (t-or (second goal-desire) 0.8)))] ;TODO see goal-processor (unify)
+              (let [quality (t-or (t-or (expectation (:truth derived-task))
+                                        (nth budget 2))
+                                       (t-or (second goal-desire)
+                                             (t-or (/ 1.0 (:sc derived-task))
+                                                   0.3)))] ;TODO see goal-processor (unify)
                 (do
                   (println "INCREASED DERIVED BUDGET")
                   (println (narsese-print (:statement derived-task)) " " (:truth derived-task) " " (:occurrence derived-task))
-                  [(max (first budget) quality)
-                   (max (second budget) 0.9)
-                   (nth budget 2)]))
+                  [(max (first budget) quality) #_(max (first budget) quality)
+                   (second budget) #_(max (second budget) 0.9)
+                   (t-or 0.6 (t-or (nth budget 2) (/ 1.0 (:sc derived-task))))]))
               not-matched-or-not-desired-budget))))
       not-matched-or-not-desired-budget))                   ;tODO too radical
   )
@@ -65,8 +68,9 @@
     (let [durability (/ (second (:budget task)) (:sc derived-task))
           truth-quality (if (:truth derived-task) (truth-to-quality (:truth derived-task))
                                                   0.0)
-          priority (* (t-or truth-quality (first (:budget task)))
-                      (occurrence-penalty-tr (:occurrence derived-task)))
+          priority (/ (* (t-or truth-quality (first (:budget task)))
+                         (occurrence-penalty-tr (:occurrence derived-task)))
+                      (/ (:sc derived-task) 1.0))
           rescale-factor 0.1 ;should probably not above input belief quality!
           quality (* priority
                      rescale-factor)]

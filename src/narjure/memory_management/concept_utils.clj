@@ -17,6 +17,7 @@
      [goal-processor :refer [process-goal]]
      [quest-processor :refer [process-quest]]
      [question-processor :refer [process-question]]]
+    [nal.term_utils :refer [syntactic-complexity]]
     [nal.deriver
      [truth :refer [w2c t-or t-and confidence frequency expectation revision]]
      [projection-eternalization :refer [project-eternalize-to]]])
@@ -89,11 +90,13 @@
   "Update the concept budget"
   (let [els (:elements-map (:tasks state))      ; :priority-index ok here
         n (count els)
-        p (round2 3 (reduce max 0 (for [[id {task :task}] els] ;rec
-                                    (if (concept-has-by-task-not-yet-recorded-link state task)
-                                      (first (:budget task))
-                                      (nth (:budget task) 2))
-                                    )))
+        p (/ (/ (round2 3 (reduce + 0 (for [[id {task :task}] els] ;rec
+                                        (if (concept-has-by-task-not-yet-recorded-link state task)
+                                          (first (:budget task))
+                                          0.0 #_(nth (:budget task) 2))
+                                        )))
+                (syntactic-complexity (:id state)))
+             max-tasks)
         q (round2 3 (reduce + 0 (for [[id {task :task}] els] (nth (:budget task) 2))))
         k  0.9999                                             ; long term quality forgetting
         new-q 0.0 #_(if (pos? n) (* k (/ q n)) 0.0) ;already managed by tasks

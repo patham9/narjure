@@ -27,8 +27,8 @@
 
 (defn get-task-id
   "The ID defining when elements in the task bag need to be merged."
-  [task] ;check line 31 in general-inferencer on change!
-  [(:statement task) (:task-type task) (occurrence-type (:occurrence task))])
+  [task] ;not using concept-term-transform would demand huge task bag size or less bias in complexity
+  [(concept-term-transform (:statement task)) (:task-type task) (occurrence-type (:occurrence task))])
 
 (defn get-anticipation-id
   "The ID defining when elements in the anticipations bag need to be merged."

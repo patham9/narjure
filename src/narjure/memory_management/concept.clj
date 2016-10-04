@@ -20,6 +20,7 @@
     [narjure.memory-management
      [concept-utils :refer :all]
      [termlink-utils :refer :all]]
+    [nal.term_utils :refer [syntactic-complexity]]
     [narjure.memory-management.local-inference
      [local-inference-utils :refer [get-task-id get-tasks]]
      [belief-processor :refer [process-belief]]
@@ -36,7 +37,7 @@
   (when true
     (let [foreign-penalty (if (not-statement-and-conceptid-equal (:statement task_)
                             (:id @state))
-                            0.5
+                            1.0
                             1.0)
           eternal-penalty (if (= (:occurrence task_) :eternal)
                             0.5
@@ -96,6 +97,7 @@
   [from message]
   (let [task-bag (:tasks @state)]
     (when true
+      ;(println (syntactic-complexity (:id @state)))
       (when (pos? (b/count-elements task-bag))
         (let [[el] (b/lookup-by-index task-bag (selection-fn (b/count-elements task-bag)))]
           (debuglogger search display ["selected inference task:" el])
@@ -162,7 +164,7 @@
   "Initialises actor: registers actor and sets actor state"
   [name]
   (set-state! {:id                       name
-               :priority                 0.1
+               :priority                 0.01
                :quality                  0.0
                :tasks                    (b/default-bag max-tasks)
                :termlinks                {}

@@ -61,8 +61,8 @@
 (def inference-tick-interval-slow 100)
 (def system-tick-interval-fast 40)
 (def inference-tick-interval-fast 20)
-(def system-tick-interval (atom system-tick-interval-slow))                               ;make big enough
-(def inference-tick-interval (atom inference-tick-interval-slow))
+(def system-tick-interval (atom system-tick-interval-fast))                               ;make big enough
+(def inference-tick-interval (atom inference-tick-interval-fast))
 (def anticipation-scale-dependent-tolerance 4.0)            ;has to be 4 since interval rounding has to agree with time measurement in 2-power
 (def anticipation-disappointment-priority-gain 1.5)         ;should be >=1.0 !
 (def termlink-default-budget [0.1 0.9])

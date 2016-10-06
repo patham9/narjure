@@ -48,7 +48,7 @@
 (def max-concept-selections 5)                              ; don't set higher if not on a sumpercomputer, will cause trouble
 (def termlink-single-sample-evidence-amount 0.01)           ; default conf for termlink truth value
 (def concept-max-termlinks 10)                              ; max size of termlink bag per concept
-(def max-tasks 20)                                          ; max size of task bag per concept
+(def max-tasks 30)                                          ; max size of task bag per concept
 (def max-anticipations 10)                                   ; max size of anticipation bag per concept
 (def max-concepts 250)                                     ; do not make too small (less than 50) as causes cyclic issue between task-dispatcher and concept-manager
 (def max-derived-sentences 50)                              ; derived task bag capacity
@@ -57,12 +57,12 @@
 (def inverse-decay-rate 10)                                        ; forgetting adjustment rate for concepts e^-lt where l = (1.0 - durabiity) / decay-rate
 ; durability of 0.5 and decay rate of 100 fully decays priority in 1000 cycles
 ; decay-rate of 10 would fully decay it in 100 cycles
-(def system-tick-interval-slow 136)
-(def inference-tick-interval-slow 100)
-(def system-tick-interval-fast 40)
-(def inference-tick-interval-fast 20)
-(def system-tick-interval (atom system-tick-interval-fast))                               ;make big enough
-(def inference-tick-interval (atom inference-tick-interval-fast))
+(def system-tick-interval-slow 50)
+(def inference-tick-interval-slow 25)
+(def system-tick-interval-fast 20)
+(def inference-tick-interval-fast 10)
+(def system-tick-interval (atom system-tick-interval-slow))                               ;make big enough
+(def inference-tick-interval (atom inference-tick-interval-slow))
 (def anticipation-scale-dependent-tolerance 4.0)            ;has to be 4 since interval rounding has to agree with time measurement in 2-power
 (def anticipation-disappointment-priority-gain 1.5)         ;should be >=1.0 !
 (def termlink-default-budget [0.1 0.9])

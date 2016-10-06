@@ -40,7 +40,7 @@
                             1.0
                             1.0)
           eternal-penalty (if (= (:occurrence task_) :eternal)
-                            0.5
+                            1.0
                             1.0)
           task (assoc task_ :budget [(* foreign-penalty eternal-penalty (first (:budget task_)))
                                      (second (:budget task_))

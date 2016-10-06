@@ -81,7 +81,7 @@
                     (let [shuffled-p1 (shuffle-term p1)
                           shuffled-p2 (shuffle-term p2)
                           shuffle-pair [shuffled-p1 shuffled-p2]
-                          unification-power 10] ;how much shuffle attempts
+                          unification-power 5] ;how much shuffle attempts
                       (if (< x unification-power)
                         (if (some #{shuffle} prev-shuffles)
                           (next-it next-it prev-shuffles prev-results (inc x)) ;generate-conclusions-no-commutativity is expensive this is why we avoid it

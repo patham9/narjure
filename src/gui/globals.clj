@@ -8,4 +8,4 @@
 (def link-labels (atom false))
 (def concept-filter (atom ""))
 (def inputstr (atom ""))
-(def speed (atom "slow"))
+(def speed (atom "medium"))

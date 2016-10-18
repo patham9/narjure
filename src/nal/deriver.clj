@@ -131,10 +131,13 @@
                                 =|> <=> </> <|>
                                 -- || conj seq-conj &|])
 
-    ;temporal copula only allowed once
-    (<= (count (filter '#{==> pred-impl retro-impl
-                        =|> <=> </> <|>} (flatten term)))
-       1)
+    ;temporal copula only allowed once, and not inside of &/ and &|
+    (let [higher-order-count (count (filter '#{==> pred-impl retro-impl
+                                               =|> <=> </> <|>} (flatten term)))]
+      (and (<= higher-order-count 1)
+           (not (and (or (= (first term) '&|)
+                         (= (first term) 'seq-conj))
+                     (> higher-order-count 0)))))
 
     ;inheritance and Similarity can't have independent vars
     (not (and (coll? term)

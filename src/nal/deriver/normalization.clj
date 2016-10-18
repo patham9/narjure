@@ -69,14 +69,14 @@
       ['-- (sort-commutative (second conclusions))]
       (let [f (first conclusions)]
         (if (commutative-ops f)
-          (vec (conj (sort-by str (drop 1 conclusions)) f))
+          (vec (conj (sort-by hash (drop 1 conclusions)) f))
           conclusions)))
     conclusions))
 
 ;https://gist.github.com/TonyLo1/a3f8e05458c5e90c2e72
 (defn union
   "the union set operation for extensional and intensional sets"
-  ([c1 c2] (sort-by str (set (concat c1 c2))))
+  ([c1 c2] (sort-by hash (set (concat c1 c2))))
   ([op c1 c2] (vec (conj (union c1 c2) op))))
 
 (defn diff

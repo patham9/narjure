@@ -461,6 +461,15 @@ So these rules are for bringing NAL-statements into a different, implied and mor
                                                                 ((&& :list/B) <=> (&& :list/A)) :post (:t/comparison))]
           )
 
+(defrules nal5-bridge
+          "https://groups.google.com/d/msg/open-nars/rY4KZJl3bMY/WQiqu4gsFAAJ"
+          ; Categorization rule, a simple way how to introduce inheritance in a general manner based on statements
+          #R[
+             (|| A B), A |- (A --> (|| A B)) :post (:t/structural-deduction)
+             (|| A B), B |- (B --> (|| A B)) :post (:t/structural-deduction)
+             ]
+          )
+
 (defrules nal6-variable-introduction
           "<h1><a href=\"NAL-Specification.pdf#page=57\" style=\"text-decoration:none\">NAL6 Variable Introduction</a></h1><br/>  <!-- target=\"bible\" -->
           The system has the ability to introduce variabes,
@@ -623,12 +632,14 @@ So these rules are for bringing NAL-statements into a different, implied and mor
           #R[P S |- (((&/ S I) =/> P) :post (:t/induction :linkage-temporal :measure-time)
                       (P =\> (&/ S I)) :post (:t/abduction :linkage-temporal :measure-time)
                       ((&/ S I) </> P) :post (:t/comparison :linkage-temporal :measure-time)
-                      (&/ S I P) :post (:t/intersection :linkage-temporal :measure-time))
+                      (&/ S I P) :post (:t/intersection :linkage-temporal :measure-time)
+                      (|| S P) :post (:t/union :linkage-temporal :measure-time))
              :pre (:belief? (:measure-time I) (:not-implication-or-equivalence P) (:not-implication-or-equivalence S) (:!= S P))]
           #R[S P |- (((&/ S I) =/> P) :post (:t/induction :linkage-temporal :measure-time)
                       (P =\> (&/ S I)) :post (:t/abduction :linkage-temporal :measure-time)
                       ((&/ S I) </> P) :post (:t/comparison :linkage-temporal :measure-time)
-                      (&/ S I P) :post (:t/intersection :linkage-temporal :measure-time))
+                      (&/ S I P) :post (:t/intersection :linkage-temporal :measure-time)
+                      (|| S P) :post (:t/union :linkage-temporal :measure-time))
              :pre (:belief? (:measure-time-backward I) (:not-implication-or-equivalence P) (:not-implication-or-equivalence S) (:!= S P))]
 
           #R[P S |- ((S =|> P) :post (:t/induction :linkage-temporal)
@@ -698,7 +709,7 @@ So these rules are for bringing NAL-statements into a different, implied and mor
 
 (def rules (compile-rules nal1-nal2-nal3-equivalence-and-implication nal1-nal5-conversion-contraposition-negation nal1-nal2-inheritance-related-syllogisms
                           nal3-intersection-union-difference nal3-inheritance-based-decomposition nal3-set-related-rules nal3-structural-inference
-                          nal4-structural-inference nal5-implication-based-syllogisms nal5-implication-based-composition nal5-nal8-implication-based-decomposition
+                          nal4-structural-inference nal5-implication-based-syllogisms nal5-implication-based-composition nal5-nal8-implication-based-decomposition nal5-bridge
                           nal5-multi-conditional-syllogism nal6-variable-introduction nal6-variable-syllogisms nal6-multiple-variable-introduction
                           nal6-variable-elimination nal6-second-layer-variable-handling nal7-temporal-inference backward-only-inference backward-driven-forward-inference
                           ))

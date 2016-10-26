@@ -464,10 +464,14 @@ So these rules are for bringing NAL-statements into a different, implied and mor
 (defrules nal5-bridge
           "https://groups.google.com/d/msg/open-nars/rY4KZJl3bMY/WQiqu4gsFAAJ"
           ; Categorization rule, a simple way how to introduce inheritance in a general manner based on statements
-          #R[
-             (|| A B), A |- (A --> (|| A B)) :post (:t/structural-deduction)
-             (|| A B), B |- (B --> (|| A B)) :post (:t/structural-deduction)
-             ]
+          #R[(|| A B), A |- (A --> (|| A B)) :post (:t/structural-deduction)]
+          #R[(|| A B), B |- (B --> (|| A B)) :post (:t/structural-deduction)]
+          #R[(&& A B), A |- ((&& A B) --> A) :post (:t/structural-deduction)]
+          #R[(&& A B), B |- ((&& A B) --> B) :post (:t/structural-deduction)]
+          #R[(&| A B), A |- ((&| A B) --> A) :post (:t/structural-deduction)]
+          #R[(&| A B), B |- ((&| A B) --> B) :post (:t/structural-deduction)]
+          #R[(&/ A P B), A |- ((&/ A P B) --> A) :post (:t/structural-deduction)]
+          #R[(&/ A P B), B |- ((&/ A P B) --> B) :post (:t/structural-deduction)]
           )
 
 (defrules nal6-variable-introduction
